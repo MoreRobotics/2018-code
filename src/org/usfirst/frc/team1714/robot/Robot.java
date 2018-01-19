@@ -16,12 +16,33 @@ public class Robot extends IterativeRobot {
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
+	
+	//Controller Values
+	public static double
+		leftStickY,
+		rightStickY;
+	
+	//Robot Classes
+	Autonomous autonomous;
+	DriverControl driverControl;
+	DriveTrain driveTrain;
+	Intake intake;
+	Lift lift;
+	Winch winch;
+	
 
 	@Override
 	public void robotInit() {
 		m_chooser.addDefault("Default Auto", kDefaultAuto);
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
+		
+		autonomous = new Autonomous();
+		driverControl = new DriverControl();
+		driveTrain = new DriveTrain();
+		intake = new Intake();
+		lift = new Lift();
+		winch = new Winch();
 	}
 
 	/**
