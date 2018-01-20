@@ -19,8 +19,9 @@ public class Robot extends IterativeRobot {
 	
 	//Controller Values
 	public static double
-		leftStickY,
-		rightStickY;
+		driveVelX,
+		driveVelY,
+		driveVelRotation;
 	
 	//Robot Classes
 	Autonomous autonomous;

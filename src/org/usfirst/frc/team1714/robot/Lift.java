@@ -28,6 +28,7 @@ public class Lift {
 		lsHigh = new DigitalInput(lsHighPin);
 		lsLow = new DigitalInput(lsLowPin);
 		encoder = new Encoder(encoderPin1,encoderPin2);
-		
 	}
+	
+	public void update()
 }

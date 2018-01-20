@@ -1,7 +1,7 @@
 package org.usfirst.frc.team1714.robot;
 
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
@@ -24,7 +24,7 @@ public class DriveTrain {
 	Spark mRearLeft;
 	Spark mRearRight;
 	
-	public AnalogGyro gyro;
+	public ADXRS450_Gyro gyro;
 	public Ultrasonic usLeft;
 	public Ultrasonic usRight;
 	public Ultrasonic usFront;
@@ -36,13 +36,16 @@ public class DriveTrain {
 		mFrontRight = new Spark(mFrontRightPin);
 		mFrontLeft = new Spark(mRearLeftPin);
 		mFrontLeft = new Spark(mRearRightPin);
-		//Gyro Init Here
+		
+		gyro = new ADXRS450_Gyro();
 		usLeft = new Ultrasonic(usLeftOutPin, usLeftInPin);
 		usRight = new Ultrasonic(usRightOutPin, usRightInPin);
 		usFront = new Ultrasonic(usFrontOutPin, usFrontInPin);
+		
+		mecanum = new MecanumDrive(mFrontLeft, mRearLeft, mFrontRight, mRearRight);
 	}
 	
-	public void update(double leftStickY, double rightStickY) {
-		
+	public void update(double driveVelX, double driveVelY, double driveVelRotation) {
+		mecanum.driveCartesian(driveVelY, driveVelX, driveVelRotation, gyro.getAngle());
 	}
 }
