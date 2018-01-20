@@ -31,7 +31,7 @@ public class DriveTrain {
 	
 	MecanumDrive mecanum;
 	
-	DriveTrain(){
+	DriveTrain() {
 		mFrontLeft = new Spark(mFrontLeftPin);
 		mFrontRight = new Spark(mFrontRightPin);
 		mFrontLeft = new Spark(mRearLeftPin);
