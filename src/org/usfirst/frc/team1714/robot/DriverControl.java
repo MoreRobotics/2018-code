@@ -5,6 +5,14 @@ import edu.wpi.first.wpilibj.Joystick;
 
 
 public class DriverControl {
+	/*
+	 * 
+	 * 
+	 *  THESE ARE PLACEHOLDER VALUES, CHANGE THEM 
+	 * 
+	 * 
+	 */
+	
 	final int xboxPort = 2;
 	final int joystickLeftPort = 0;
 	final int joystickRightPort = 1;

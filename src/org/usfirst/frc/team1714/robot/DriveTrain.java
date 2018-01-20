@@ -6,6 +6,14 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 public class DriveTrain {
+	/*
+	 * 
+	 * 
+	 *  THESE ARE PLACEHOLDER VALUES, CHANGE THEM 
+	 * 
+	 * 
+	 */
+	
 	// Drive Train Pins
 	final int mFrontLeftPin = 0; 
 	final int mFrontRightPin = 1;

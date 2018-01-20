@@ -5,6 +5,14 @@ import edu.wpi.first.wpilibj.VictorSP;
 
 
 public class Lift {
+	/*
+	 * 
+	 * 
+	 *  THESE ARE PLACEHOLDER VALUES, CHANGE THEM 
+	 * 
+	 * 
+	 */
+	
 	// Lift Pins
 	final int victor1Pin = 0;
 	final int victor2Pin = 1;
@@ -21,6 +29,16 @@ public class Lift {
 	public DigitalInput lsLow;
 	public Encoder encoder;
 	
+	boolean targetMode = false;
+	final int targetHeightScale = 0;
+	final int targetHeightSwitch = 0;
+	final int targetHeightGround = 0;
+	final int targetHeightDeadzone = 5;
+	final double slowingDistance = 50;
+	final double maxSpeedUp = 1;
+	final double maxSpeedDown = -0.7;
+	int targetHeight = targetHeightGround;
+	
 	Lift(){
 		victor1 = new VictorSP(victor1Pin);
 		victor2 = new VictorSP(victor2Pin);
@@ -30,5 +48,60 @@ public class Lift {
 		encoder = new Encoder(encoderPin1,encoderPin2);
 	}
 	
-	public void update()
+	void setVictors(double vel) {
+		victor1.set(vel);
+		victor2.set(vel);
+	}
+	
+	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround) {
+		if(liftTargetScale) {
+			targetMode = true;
+			targetHeight = targetHeightScale;
+		}
+		else if(liftTargetSwitch) {
+			targetMode = true;
+			targetHeight = targetHeightSwitch;
+		}
+		else if(liftTargetGround) {
+			targetMode = true;
+			targetHeight = targetHeightGround;
+		}
+		
+		if(liftVel != 0) {
+			targetMode = false;
+		}
+		
+		if(!targetMode) { 
+			if((liftVel < 0 && !lsLow.get()) || (liftVel > 0 && !lsHigh.get())) {
+				setVictors(0);
+			}
+			else {
+				if(liftVel > maxSpeedUp) {
+					setVictors(maxSpeedUp);
+				}
+				else if(liftVel < maxSpeedDown) {
+					setVictors(maxSpeedDown);
+				}
+				else {
+					setVictors(liftVel);
+				}
+			}
+		}
+		else {
+			if((encoder.get() > targetHeight + targetHeightDeadzone) || (encoder.get() < targetHeight - targetHeightDeadzone)) {
+				int difference = (targetHeight - encoder.get());
+				double velocity = difference / slowingDistance;
+				if(velocity > maxSpeedUp) {
+					velocity = maxSpeedUp;
+				}
+				else if(velocity < maxSpeedDown) {
+					velocity = maxSpeedDown;
+				}
+				setVictors(velocity);
+			}
+			else {
+				setVictors(0);
+			}
+		}
+	}
 }

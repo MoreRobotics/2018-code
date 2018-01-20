@@ -21,7 +21,12 @@ public class Robot extends IterativeRobot {
 	public static double
 		driveVelX,
 		driveVelY,
-		driveVelRotation;
+		driveVelRotation,
+		liftVel;
+	public static boolean
+		liftTargetScale,
+		liftTargetSwitch,
+		liftTargetGround;
 	
 	//Robot Classes
 	Autonomous autonomous;

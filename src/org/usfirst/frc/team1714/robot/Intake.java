@@ -4,6 +4,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 
 public class Intake {
+	/*
+	 * 
+	 * 
+	 *  THESE ARE PLACEHOLDER VALUES, CHANGE THEM 
+	 * 
+	 * 
+	 */
+	
 //	intake pins
 	final int mLeftPin = 0;
 	final int mRightPin = 1;

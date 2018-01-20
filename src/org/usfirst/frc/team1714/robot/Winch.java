@@ -3,6 +3,14 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class Winch {
+	/*
+	 * 
+	 * 
+	 *  THESE ARE PLACEHOLDER VALUES, CHANGE THEM 
+	 * 
+	 * 
+	 */
+	
 	final int victor1Pin = 0;
 	final int victor2Pin = 1;
 	final int encoderPin1 = 0;
