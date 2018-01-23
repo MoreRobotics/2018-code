@@ -18,12 +18,12 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	
 	//Controller Values
-	public static double
+	public double
 		driveVelX,
 		driveVelY,
 		driveVelRotation,
 		liftVel;
-	public static boolean
+	public boolean
 		liftTargetScale,
 		liftTargetSwitch,
 		liftTargetGround,

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 
 
@@ -25,5 +26,39 @@ public class DriverControl {
 		xbox = new XboxController(xboxPort);
 		joystickLeft = new Joystick(joystickLeftPort);
 		joystickRight = new Joystick(joystickRightPort);
+	}
+	
+	public void update(Robot robot) {
+		robot.driveVelX = joystickRight.getX();
+		robot.driveVelY = joystickRight.getY();
+		robot.driveVelRotation = joystickRight.getZ();
+		
+		robot.liftVel = xbox.getY(Hand.kLeft);
+		
+		if(xbox.getAButton()) {
+			robot.intakeIn = true;
+			robot.intakeOut = false;
+		}
+		else if(xbox.getYButton()) {
+			robot.intakeIn = false;
+			robot.intakeOut = true;
+		}
+		else if(xbox.getXButton() || xbox.getBButton()) {
+			robot.intakeIn = false;
+			robot.intakeOut = false;
+		}
+		
+		if(xbox.getBumper(Hand.kRight)) {
+			robot.winchUp = true;
+			robot.winchDown = false;
+		}
+		else if (xbox.getBumper(Hand.kLeft)) {
+			robot.winchUp = false;
+			robot.winchDown = true;
+		}
+		else {
+			robot.winchUp = false;
+			robot.winchDown = false;
+		}
 	}
 }
