@@ -1,6 +1,6 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
 public class Winch {
 	/*
@@ -13,23 +13,22 @@ public class Winch {
 	
 	final int victor1Pin = 0;
 	final int victor2Pin = 1;
-	final int encoderPin1 = 0;
-	final int encoderPin2 = 0;
-	final double maxSpeedUp = 1;
-	final double maxSpeedDown = -0.7;
-	final int encoderMax = 1;
-	final int encoderMin = 0;
+	final int potPin = 0;
+	final double speedUp = 1;
+	final double speedDown = -0.7;
+	final int potMax = 1;
+	final int potMin = 0;
 	
 	VictorSP victor1;
 	VictorSP victor2;
 	
-	Encoder encoder;
+	AnalogPotentiometer pot;
 	
 	Winch() {
 		victor1 = new VictorSP(victor1Pin);
 		victor2 = new VictorSP(victor2Pin);
 		
-		encoder = new Encoder(encoderPin1,encoderPin2);
+		pot = new AnalogPotentiometer(potPin);
 		
 	}
 	
@@ -39,12 +38,12 @@ public class Winch {
 	}
 	
 	public void update(boolean winchUp, boolean winchDown) {
-		if(winchUp && encoder.get() < encoderMax) {
-			setVictors(maxSpeedUp);
+		if(winchUp && pot.get() < potMax) {
+			setVictors(speedUp);
 			
 		}
-		else if(winchDown && encoder.get() < encoderMin) {
-			setVictors(maxSpeedDown);
+		else if(winchDown && pot.get() > potMin) {
+			setVictors(speedDown);
 				
 		}
 		else {
