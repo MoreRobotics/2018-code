@@ -24,11 +24,13 @@ public class Robot extends IterativeRobot {
 		driveVelRotation,
 		liftVel;
 	public static boolean
-		winchUp,
-		winchDown,
 		liftTargetScale,
 		liftTargetSwitch,
-		liftTargetGround;
+		liftTargetGround,
+		winchUp,
+		winchDown,
+		intakeIn,
+		intakeOut;
 	
 	//Robot Classes
 	Autonomous autonomous;

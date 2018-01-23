@@ -17,6 +17,8 @@ public class Intake {
 	final int mRightPin = 1;
 	final int lsLeftPin = 0;
 	final int lsRightPin = 1;
+	final double speedIn = 1;
+	final double speedOut = -1;
 	
 	Victor mLeft;
 	Victor mRight;
@@ -33,6 +35,21 @@ public class Intake {
 		
 	}
 	
+	void setVictors(double vel) {
+		mLeft.set(vel);
+		mRight.set(-vel);
+	}
 	
+	public void update(boolean intakeIn, boolean intakeOut) {
+		if(intakeIn) {
+			setVictors(speedIn);
+		}
+		else if(intakeOut) {
+			setVictors(speedOut);
+		}
+		else {
+			setVictors(0);
+		}
+	}
 	
 }
