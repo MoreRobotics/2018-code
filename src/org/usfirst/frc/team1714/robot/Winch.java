@@ -14,10 +14,11 @@ public class Winch {
 	final int victor1Pin = 0;
 	final int victor2Pin = 1;
 	final int potPin = 0;
-	final double speedUp = 1;
-	final double speedDown = -0.7;
 	final int potMax = 1;
 	final int potMin = 0;
+	final double speedUp = 1;
+	final double speedDown = -0.7;
+	
 	
 	VictorSP victor1;
 	VictorSP victor2;

@@ -12,11 +12,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
-	private static final String kDefaultAuto = "Default";
-	private static final String kCustomAuto = "My Auto";
-	private String m_autoSelected;
-	private SendableChooser<String> m_chooser = new SendableChooser<>();
-	
+	//Autonomous Selector Values
+	private String locationSelected;
+	private String actionSelected;
+	private String pathSelected;
+	private double initDelay;
+	private SendableChooser<String> locationChooser = new SendableChooser<>();
+	private SendableChooser<String> actionChooser = new SendableChooser<>();
+	private SendableChooser<String> pathChooser = new SendableChooser<>();
+
 	//Controller Values
 	public double
 		driveVelX,
@@ -43,9 +47,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		m_chooser.addDefault("Default Auto", kDefaultAuto);
-		m_chooser.addObject("My Auto", kCustomAuto);
-		SmartDashboard.putData("Auto choices", m_chooser);
+		locationChooser.addDefault("Left", "left");
+		locationChooser.addObject("Middle", "middle");
+		locationChooser.addObject("Right", "right");
+		SmartDashboard.putData("Location:", locationChooser);
 		
 		autonomous = new Autonomous();
 		driverControl = new DriverControl();
@@ -68,21 +73,23 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_autoSelected = m_chooser.getSelected();
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
-		System.out.println("Auto selected: " + m_autoSelected);
+		locationSelected = locationChooser.getSelected();
+		actionSelected = actionChooser.getSelected();
+		pathSelected = pathChooser.getSelected();
 	}
 
 	@Override
 	public void autonomousPeriodic() {
-		switch (m_autoSelected) {
-			case kCustomAuto:
-				// Put custom auto code here
-				break;
-			case kDefaultAuto:
+		switch (locationSelected) {
 			default:
-				// Put default auto code here
+			case "left":
+				//autonomous.updateLeft(actionSelected, pathSelected);
+				break;
+			case "middle":
+				//autonomous.updateMiddle(actionSelected, pathSelected);
+				break;
+			case "right":
+				//autonomous.updateRight(actionSelected, pathSelected);
 				break;
 		}
 	}
