@@ -1,4 +1,5 @@
 package org.usfirst.frc.team1714.robot;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Autonomous {
@@ -11,8 +12,12 @@ public class Autonomous {
 	
 	int mainStage = 0;
 	
+	char switchLocation = 0;
+	char scaleLocation = 0;
+	
 	// this loop handles all routines that begin with the robot in the left position
 	void updateLeft(String actionSelected, String pathSelected, double delay) {
+		
 		switch(mainStage) {
 		case 0:
 			if(initialDelay(delay)) {
@@ -20,7 +25,57 @@ public class Autonomous {
 			}
 		break;
 		case 1:
-			
+			if(actionSelected == "line") {
+				// TODO: drive until D3
+				mainStage = done;
+			}
+			else if(actionSelected == "switch")
+			{
+				if(switchLocation == 'L') {
+					// TODO: drive until D3
+					mainStage = 4;
+				}
+				else if(switchLocation == 'R') {
+					if(pathSelected == "near") {
+						// TODO: drive until D1
+						mainStage++;
+					}
+					else if(pathSelected == "far") {
+						// TODO: drive until D2
+						mainStage++;
+					}
+				}
+			}
+			else if(actionSelected == "scale") {
+				//TODO
+			}
+		break;
+		case 2:
+			if(actionSelected == "switch" && switchLocation == 'R') {
+				// TODO: drive until D4
+			}
+			else if (actionSelected == "scale") {
+				
+			}
+		break;
+		case 3:
+			if(actionSelected == "switch" && switchLocation == 'R') {
+				if(pathSelected == "near") {
+					// TODO: Drive until D3 - D1
+				}
+				else if(pathSelected == "far") {
+					// TODO: Drive until D2 - D3
+				}
+			}
+		break;
+		// the stage where we score
+		case 4:
+			if(actionSelected == "switch") {
+				updateCubeSwitch();
+			}
+			else if(actionSelected == "scale") {
+				updateCubeScale();
+			}
 		break;
 		}
 	}
@@ -76,6 +131,17 @@ public class Autonomous {
 			else {
 				return false;
 			}
+		}
+	}
+	
+	boolean pollLocations() {
+		switchLocation = DriverStation.getInstance().getGameSpecificMessage().charAt(0);
+		scaleLocation = DriverStation.getInstance().getGameSpecificMessage().charAt(1);
+		if((switchLocation == 'R' || switchLocation == 'L') && (scaleLocation == 'R' || scaleLocation == 'L')) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 }

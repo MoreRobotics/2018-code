@@ -16,10 +16,12 @@ public class Robot extends IterativeRobot {
 	private String locationSelected;
 	private String actionSelected;
 	private String pathSelected;
+	
 	private double initDelay;
 	private SendableChooser<String> locationChooser = new SendableChooser<>();
 	private SendableChooser<String> actionChooser = new SendableChooser<>();
 	private SendableChooser<String> pathChooser = new SendableChooser<>();
+	private SendableChooser<String> scoreChooser = new SendableChooser<>();
 
 	//Controller Values
 	public double
@@ -52,10 +54,9 @@ public class Robot extends IterativeRobot {
 		locationChooser.addDefault("Left", "left");
 		locationChooser.addObject("Middle", "middle");
 		locationChooser.addObject("Right", "right");
-		actionChooser.addObject("Go to Switch", "goswitch");
-		actionChooser.addObject("Go to Switch + Score", "goswitchscore");
-		actionChooser.addObject("Go to Scale", "goscale");
-		actionChooser.addObject("Go to Scale + Score", "goscalescore");
+		actionChooser.addObject("Score on Switch", "switch");
+		actionChooser.addObject("Score on Scale", "scale");
+		actionChooser.addObject("Cross Line", "line");
 		
 		SmartDashboard.putData("Location:", locationChooser);
 		SmartDashboard.putString("Auto Delay: ", "");
@@ -68,23 +69,21 @@ public class Robot extends IterativeRobot {
 		winch = new Winch();
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
-	 *
-	 * <p>You can add additional auto modes by adding additional comparisons to
-	 * the switch structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
-	 */
 	@Override
 	public void autonomousInit() {
 		locationSelected = locationChooser.getSelected();
 		actionSelected = actionChooser.getSelected();
 		pathSelected = pathChooser.getSelected();
 		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
+		
+		int i = 0;
+		while (!autonomous.pollLocations()) {
+			i++;
+			if (i > 10000) {
+				System.out.println("Switch/Scale locations not valid");
+				break;
+			}
+		}
 	}
 
 	@Override
