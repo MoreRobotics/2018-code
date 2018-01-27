@@ -48,17 +48,31 @@ public class DriverControl {
 			robot.intakeOut = false;
 		}
 		
-		if(xbox.getBumper(Hand.kRight)) {
+		if(xbox.getPOV() == 0) {
 			robot.winchUp = true;
 			robot.winchDown = false;
 		}
-		else if (xbox.getBumper(Hand.kLeft)) {
+		else if (xbox.getPOV() == 180) {
 			robot.winchUp = false;
 			robot.winchDown = true;
 		}
 		else {
 			robot.winchUp = false;
 			robot.winchDown = false;
+		}
+		
+		if(xbox.getBumper(Hand.kLeft)) {
+			robot.extended = true;
+		}
+		else if(xbox.getTriggerAxis(Hand.kLeft) > 0.7 ){
+			robot.extended = false;
+		}
+		
+		if(xbox.getBumper(Hand.kRight)) {
+			robot.grasping = true;
+		}
+		else if(xbox.getTriggerAxis(Hand.kRight) > 0.7) {
+			robot.grasping = false;
 		}
 	}
 }

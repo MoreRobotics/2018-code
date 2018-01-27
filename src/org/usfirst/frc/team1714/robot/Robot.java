@@ -34,7 +34,9 @@ public class Robot extends IterativeRobot {
 		winchUp,
 		winchDown,
 		intakeIn,
-		intakeOut;
+		intakeOut,
+		extended,
+		grasping;
 	
 	//Robot Classes
 	Autonomous autonomous;
@@ -50,7 +52,13 @@ public class Robot extends IterativeRobot {
 		locationChooser.addDefault("Left", "left");
 		locationChooser.addObject("Middle", "middle");
 		locationChooser.addObject("Right", "right");
+		actionChooser.addObject("Go to Switch", "goswitch");
+		actionChooser.addObject("Go to Switch + Score", "goswitchscore");
+		actionChooser.addObject("Go to Scale", "goscale");
+		actionChooser.addObject("Go to Scale + Score", "goscalescore");
+		
 		SmartDashboard.putData("Location:", locationChooser);
+		SmartDashboard.putString("Auto Delay: ", "");
 		
 		autonomous = new Autonomous();
 		driverControl = new DriverControl();
@@ -76,6 +84,7 @@ public class Robot extends IterativeRobot {
 		locationSelected = locationChooser.getSelected();
 		actionSelected = actionChooser.getSelected();
 		pathSelected = pathChooser.getSelected();
+		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
 	}
 
 	@Override
@@ -83,19 +92,20 @@ public class Robot extends IterativeRobot {
 		switch (locationSelected) {
 			default:
 			case "left":
-				//autonomous.updateLeft(actionSelected, pathSelected);
+				autonomous.updateLeft(actionSelected, pathSelected, initDelay);
 				break;
 			case "middle":
-				//autonomous.updateMiddle(actionSelected, pathSelected);
+				autonomous.updateMiddle(actionSelected, pathSelected, initDelay);
 				break;
 			case "right":
-				//autonomous.updateRight(actionSelected, pathSelected);
+				autonomous.updateRight(actionSelected, pathSelected, initDelay);
 				break;
 		}
 	}
 
 	@Override
 	public void teleopPeriodic() {
+		System.out.println(SmartDashboard.getString("Auto Delay: ", "0.0"));
 	}
 
 	@Override
