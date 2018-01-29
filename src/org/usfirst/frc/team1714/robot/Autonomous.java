@@ -27,7 +27,7 @@ public class Autonomous {
 		case 1:
 			if(actionSelected == "line") {
 				// TODO: drive until D3
-				mainStage = done;
+				mainStage = 5;
 			}
 			else if(actionSelected == "switch")
 			{
@@ -71,11 +71,18 @@ public class Autonomous {
 		// the stage where we score
 		case 4:
 			if(actionSelected == "switch") {
-				updateCubeSwitch();
+				if(updateCubeSwitch()) {
+					mainStage++;
+				}
 			}
 			else if(actionSelected == "scale") {
-				updateCubeScale();
+				if(updateCubeScale()) {
+					mainStage++;
+				}
 			}
+		break;
+		case 5:
+			// set everything to 0
 		break;
 		}
 	}
@@ -106,12 +113,14 @@ public class Autonomous {
 		}
 	}
 	
-	void updateCubeSwitch() {
+	boolean updateCubeSwitch() {
 		//lower lift, place cube (at height appropriate for switch)
+		return true;
 	}
 	
-	void updateCubeScale() {
+	boolean updateCubeScale() {
 		//lower lift, place cube (at height appropriate for scale)
+		return true;
 	}
 	
 	//this function will start a timer when first called, then return false until the passed amount of time has passed.
