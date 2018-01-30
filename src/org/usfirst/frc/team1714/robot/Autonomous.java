@@ -87,7 +87,7 @@ public class Autonomous {
 		}
 	}
 	
-	void updateMiddle(String actionSelected, String pathSelected, double delay) {
+	void updateMiddle(String actionSelected, String pathSelected, double delay, String lineSideSelected) {
 		switch(mainStage) {
 		case 0:
 			if(initialDelay(delay)) {
@@ -95,7 +95,66 @@ public class Autonomous {
 			}
 		break;
 		case 1:
-			
+			// TODO: Drive until D1
+		break;
+		case 2:
+			if(actionSelected == "switch") {
+				if(switchLocation == 'L') {
+					// TODO: drive to d6
+					mainStage++;
+				}
+				else if(switchLocation == 'R') {
+					// TODO: drive to d5
+					mainStage++;
+				}
+			}
+			else if(actionSelected == "scale") {
+				if(scaleLocation == 'L') {
+					//TODO: drive to d6
+					mainStage++;
+				}
+				else if(scaleLocation == 'R') {
+					//TODO: drive to d5
+					mainStage++;
+				}
+			}
+			else if(actionSelected == "line") {
+				if(lineSideSelected == "L") {
+					//TODO: drive to d6
+					mainStage++;
+				}
+				else if(lineSideSelected == "R") {
+					//TODO: drive to d5
+					mainStage++;
+				}
+			}
+		break;
+		case 3:
+			if(actionSelected == "switch") {
+				//TODO: drive to d3 - d1
+				mainStage++;
+			}
+			else if(actionSelected == "scale") {
+				
+			}
+			else if(actionSelected == "line") {
+				//TODO: drive to d3 - d1
+			}
+		break;
+		case 4:
+			if(actionSelected == "switch") {
+				if(updateCubeSwitch()) {
+					mainStage++;
+				}
+			}
+			else if(actionSelected == "scale") {
+				if(updateCubeScale()) {
+					mainStage++;
+				}
+			}
+		break;
+		case 5:
+			// set everything to 0
 		break;
 		}
 	}
@@ -108,7 +167,64 @@ public class Autonomous {
 			}
 		break;
 		case 1:
-			
+			if(actionSelected == "line") {
+				// TODO: drive until D3
+				mainStage = 5;
+			}
+			else if(actionSelected == "switch")
+			{
+				if(switchLocation == 'L') {
+					// TODO: drive until D3
+					mainStage = 4;
+				}
+				else if(switchLocation == 'R') {
+					if(pathSelected == "near") {
+						// TODO: drive until D1
+						mainStage++;
+					}
+					else if(pathSelected == "far") {
+						// TODO: drive until D2
+						mainStage++;
+					}
+				}
+			}
+			else if(actionSelected == "scale") {
+				//TODO
+			}
+		break;
+		case 2:
+			if(actionSelected == "switch" && switchLocation == 'R') {
+				// TODO: drive until D4
+			}
+			else if (actionSelected == "scale") {
+				
+			}
+		break;
+		case 3:
+			if(actionSelected == "switch" && switchLocation == 'R') {
+				if(pathSelected == "near") {
+					// TODO: Drive until D3 - D1
+				}
+				else if(pathSelected == "far") {
+					// TODO: Drive until D2 - D3
+				}
+			}
+		break;
+		// the stage where we score
+		case 4:
+			if(actionSelected == "switch") {
+				if(updateCubeSwitch()) {
+					mainStage++;
+				}
+			}
+			else if(actionSelected == "scale") {
+				if(updateCubeScale()) {
+					mainStage++;
+				}
+			}
+		break;
+		case 5:
+			// set everything to 0
 		break;
 		}
 	}

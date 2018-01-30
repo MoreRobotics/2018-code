@@ -16,12 +16,13 @@ public class Robot extends IterativeRobot {
 	private String locationSelected;
 	private String actionSelected;
 	private String pathSelected;
+	private String lineSideSelected;
 	
 	private double initDelay;
 	private SendableChooser<String> locationChooser = new SendableChooser<>();
 	private SendableChooser<String> actionChooser = new SendableChooser<>();
 	private SendableChooser<String> pathChooser = new SendableChooser<>();
-	private SendableChooser<String> scoreChooser = new SendableChooser<>();
+	private SendableChooser<String> lineSideChooser = new SendableChooser<>();
 
 	//Controller Values
 	public double
@@ -57,6 +58,8 @@ public class Robot extends IterativeRobot {
 		actionChooser.addObject("Score on Switch", "switch");
 		actionChooser.addObject("Score on Scale", "scale");
 		actionChooser.addObject("Cross Line", "line");
+		lineSideChooser.addObject("Left Side",  "L");
+		lineSideChooser.addObject("Right Side", "R");
 		
 		SmartDashboard.putData("Location:", locationChooser);
 		SmartDashboard.putString("Auto Delay: ", "");
@@ -74,6 +77,7 @@ public class Robot extends IterativeRobot {
 		locationSelected = locationChooser.getSelected();
 		actionSelected = actionChooser.getSelected();
 		pathSelected = pathChooser.getSelected();
+		lineSideSelected = lineSideChooser.getSelected();
 		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
 		
 		int i = 0;
@@ -94,7 +98,7 @@ public class Robot extends IterativeRobot {
 				autonomous.updateLeft(actionSelected, pathSelected, initDelay);
 				break;
 			case "middle":
-				autonomous.updateMiddle(actionSelected, pathSelected, initDelay);
+				autonomous.updateMiddle(actionSelected, pathSelected, initDelay, lineSideSelected);
 				break;
 			case "right":
 				autonomous.updateRight(actionSelected, pathSelected, initDelay);
