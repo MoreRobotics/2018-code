@@ -15,13 +15,11 @@ public class Robot extends IterativeRobot {
 	//Autonomous Selector Values
 	private String locationSelected;
 	private String actionSelected;
-	private String pathSelected;
 	private String lineSideSelected;
 	
 	private double initDelay;
 	private SendableChooser<String> locationChooser = new SendableChooser<>();
 	private SendableChooser<String> actionChooser = new SendableChooser<>();
-	private SendableChooser<String> pathChooser = new SendableChooser<>();
 	private SendableChooser<String> lineSideChooser = new SendableChooser<>();
 
 	//Controller Values
@@ -56,7 +54,7 @@ public class Robot extends IterativeRobot {
 		locationChooser.addObject("Middle", "middle");
 		locationChooser.addObject("Right", "right");
 		actionChooser.addObject("Score on Switch", "switch");
-		actionChooser.addObject("Score on Scale", "scale");
+		actionChooser.addObject("Score on Scale (NOT YET FUNCTIONAL)", "scale");
 		actionChooser.addObject("Cross Line", "line");
 		lineSideChooser.addObject("Left Side",  "L");
 		lineSideChooser.addObject("Right Side", "R");
@@ -76,7 +74,6 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		locationSelected = locationChooser.getSelected();
 		actionSelected = actionChooser.getSelected();
-		pathSelected = pathChooser.getSelected();
 		lineSideSelected = lineSideChooser.getSelected();
 		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
 		
@@ -95,13 +92,13 @@ public class Robot extends IterativeRobot {
 		switch (locationSelected) {
 			default:
 			case "left":
-				autonomous.updateLeft(actionSelected, pathSelected, initDelay);
+				autonomous.updateLeft(this, actionSelected, initDelay);
 				break;
 			case "middle":
-				autonomous.updateMiddle(actionSelected, pathSelected, initDelay, lineSideSelected);
+				autonomous.updateMiddle(this, actionSelected, initDelay, lineSideSelected);
 				break;
 			case "right":
-				autonomous.updateRight(actionSelected, pathSelected, initDelay);
+				autonomous.updateRight(this, actionSelected, initDelay);
 				break;
 		}
 	}

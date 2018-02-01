@@ -10,13 +10,29 @@ public class Autonomous {
 	final int d5 = 0; //the distance from middle starting position to right starting position
 	final int d6 = d4 - d5; //the distance from middle starting position to left starting position
 	
+	// TODO: FIX THESE PLACEHOLDERS
+	final double switchDetectDistance = 0;
+	final double driveSpeed = 0.75;
+	
 	int mainStage = 0;
 	
 	char switchLocation = 0;
 	char scaleLocation = 0;
 	
+	boolean timerStarted = false;
+	double startTime;
+	
+	// the constant controlling how far the robot drives after reaching the switch (when going the far path)
+	final double switchFarTimeConst = 2;
+	// the distance between the robot's front US sensor and the wall (at end of far path)
+	final double switchFarWallDist = 0;
+	
 	// this loop handles all routines that begin with the robot in the left position
-	void updateLeft(String actionSelected, String pathSelected, double delay) {
+	void updateLeft(Robot robot, String actionSelected, double delay) {
+		// for time based segments, use time = constant/speed
+		// (inverse variation) - yonathan
+		// constant = desired time at highest speed
+		// constant is invalid when weight changes
 		
 		switch(mainStage) {
 		case 0:
@@ -26,23 +42,46 @@ public class Autonomous {
 		break;
 		case 1:
 			if(actionSelected == "line") {
-				// TODO: drive until D3
-				mainStage = 5;
+				// drive until we're next to the switch plate
+				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+					robot.driveVelY = driveSpeed;
+				}
+				else {
+					robot.driveVelY = 0;
+					// jump to cube placement
+					mainStage = 5;
+				}
 			}
 			else if(actionSelected == "switch")
 			{
 				if(switchLocation == 'L') {
-					// TODO: drive until D3
-					mainStage = 4;
+					// drive until we're next to the switch plate
+					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+						robot.driveVelY = driveSpeed;
+					}
+					else {
+						robot.driveVelY = 0;
+						mainStage = 4;
+					}
 				}
 				else if(switchLocation == 'R') {
-					if(pathSelected == "near") {
-						// TODO: drive until D1
-						mainStage++;
+					// drive until we're next to the switch plate
+					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+						robot.driveVelY = driveSpeed;
 					}
-					else if(pathSelected == "far") {
-						// TODO: drive until D2
-						mainStage++;
+					else {
+						// once we are, drive forward a little bit more
+						if(!timerStarted) {
+							startTime = Timer.getFPGATimestamp();
+							timerStarted = true;
+						}
+						else {
+							if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
+								robot.driveVelY = 0;
+								timerStarted = false;
+								mainStage++;
+							}
+						}
 					}
 				}
 			}
@@ -52,21 +91,22 @@ public class Autonomous {
 		break;
 		case 2:
 			if(actionSelected == "switch" && switchLocation == 'R') {
-				// TODO: drive until D4
+				robot.driveVelY = driveSpeed;
+				if(robot.driveTrain.usFront.getRangeMM() > switchFarWallDist) {
+					robot.driveVelY = 0;
+					mainStage++;
+				}
 			}
 			else if (actionSelected == "scale") {
-				
+				//TODO
 			}
 		break;
 		case 3:
 			if(actionSelected == "switch" && switchLocation == 'R') {
-				if(pathSelected == "near") {
-					// TODO: Drive until D3 - D1
-				}
-				else if(pathSelected == "far") {
-					// TODO: Drive until D2 - D3
-				}
+				// TODO: ROTATE & Drive until D2 - D3
+				if(robot.driveTrain.gyro.)
 			}
+			// TODO: scale code here?
 		break;
 		// the stage where we score
 		case 4:
@@ -87,7 +127,7 @@ public class Autonomous {
 		}
 	}
 	
-	void updateMiddle(String actionSelected, String pathSelected, double delay, String lineSideSelected) {
+	void updateMiddle(String actionSelected, double delay, String lineSideSelected) {
 		switch(mainStage) {
 		case 0:
 			if(initialDelay(delay)) {
@@ -98,68 +138,25 @@ public class Autonomous {
 			// TODO: Drive until D1
 		break;
 		case 2:
-			if(actionSelected == "switch") {
-				if(switchLocation == 'L') {
-					// TODO: drive to d6
-					mainStage++;
-				}
-				else if(switchLocation == 'R') {
-					// TODO: drive to d5
-					mainStage++;
-				}
+			if(lineSideSelected == "L") {
+				//TODO: drive to d6
+				mainStage++;
 			}
-			else if(actionSelected == "scale") {
-				if(scaleLocation == 'L') {
-					//TODO: drive to d6
-					mainStage++;
-				}
-				else if(scaleLocation == 'R') {
-					//TODO: drive to d5
-					mainStage++;
-				}
-			}
-			else if(actionSelected == "line") {
-				if(lineSideSelected == "L") {
-					//TODO: drive to d6
-					mainStage++;
-				}
-				else if(lineSideSelected == "R") {
-					//TODO: drive to d5
-					mainStage++;
-				}
+			else if(lineSideSelected == "R") {
+				//TODO: drive to d5
+				mainStage++;
 			}
 		break;
 		case 3:
-			if(actionSelected == "switch") {
-				//TODO: drive to d3 - d1
-				mainStage++;
-			}
-			else if(actionSelected == "scale") {
-				
-			}
-			else if(actionSelected == "line") {
-				//TODO: drive to d3 - d1
-			}
+			//TODO: drive to d3 - d1
 		break;
 		case 4:
-			if(actionSelected == "switch") {
-				if(updateCubeSwitch()) {
-					mainStage++;
-				}
-			}
-			else if(actionSelected == "scale") {
-				if(updateCubeScale()) {
-					mainStage++;
-				}
-			}
-		break;
-		case 5:
 			// set everything to 0
 		break;
 		}
 	}
 	
-	void updateRight(String actionSelected, String pathSelected, double delay) {
+	void updateRight(String actionSelected, double delay) {
 		switch(mainStage) {
 		case 0:
 			if(initialDelay(delay)) {
@@ -178,14 +175,8 @@ public class Autonomous {
 					mainStage = 4;
 				}
 				else if(switchLocation == 'R') {
-					if(pathSelected == "near") {
-						// TODO: drive until D1
-						mainStage++;
-					}
-					else if(pathSelected == "far") {
-						// TODO: drive until D2
-						mainStage++;
-					}
+					// TODO: drive until D2
+					mainStage++;
 				}
 			}
 			else if(actionSelected == "scale") {
@@ -202,12 +193,7 @@ public class Autonomous {
 		break;
 		case 3:
 			if(actionSelected == "switch" && switchLocation == 'R') {
-				if(pathSelected == "near") {
-					// TODO: Drive until D3 - D1
-				}
-				else if(pathSelected == "far") {
-					// TODO: Drive until D2 - D3
-				}
+				// TODO: Drive until D2 - D3
 			}
 		break;
 		// the stage where we score
@@ -230,27 +216,26 @@ public class Autonomous {
 	}
 	
 	boolean updateCubeSwitch() {
-		//lower lift, place cube (at height appropriate for switch)
+		//TODO: lower lift, place cube (at height appropriate for switch)
 		return true;
 	}
 	
 	boolean updateCubeScale() {
-		//lower lift, place cube (at height appropriate for scale)
+		//TODO: lower lift, place cube (at height appropriate for scale)
 		return true;
 	}
 	
 	//this function will start a timer when first called, then return false until the passed amount of time has passed.
 	//we can use it at the start of each auto update loop to allow the drivers to set a delay at the start of each match
-	boolean running;
-	double startTime;
 	boolean initialDelay(double delayTime) {
-		if(!running) {
+		if(!timerStarted) {
 			startTime = Timer.getFPGATimestamp();
-			running = true;
+			timerStarted = true;
 			return false;
 		}
 		else {
 			if(Timer.getFPGATimestamp() - startTime > delayTime) {
+				timerStarted = false;
 				return true;
 			}
 			else {
