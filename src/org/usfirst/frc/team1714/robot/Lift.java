@@ -1,6 +1,6 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.VictorSP;
 
 
@@ -19,15 +19,14 @@ public class Lift {
 	
 	final int lsHighPin = 0;
 	final int lsLowPin = 1;
-	final int encoderPin1 = 0;
-	final int encoderPin2 = 0;
+	final int potPin = 0;
 	
 	VictorSP victor1;
 	VictorSP victor2;
 	
 	public DigitalInput lsHigh;
 	public DigitalInput lsLow;
-	public Encoder encoder;
+	public AnalogPotentiometer pot;
 	
 	boolean targetMode = false;
 	final int targetHeightScale = 0;
@@ -45,7 +44,7 @@ public class Lift {
 		
 		lsHigh = new DigitalInput(lsHighPin);
 		lsLow = new DigitalInput(lsLowPin);
-		encoder = new Encoder(encoderPin1,encoderPin2);
+		pot = new AnalogPotentiometer(potPin);
 	}
 	
 	void setVictors(double vel) {
@@ -88,8 +87,8 @@ public class Lift {
 			}
 		}
 		else {
-			if((encoder.get() > targetHeight + targetHeightDeadzone) || (encoder.get() < targetHeight - targetHeightDeadzone)) {
-				int difference = (targetHeight - encoder.get());
+			if((pot.get() > targetHeight + targetHeightDeadzone) || (pot.get() < targetHeight - targetHeightDeadzone)) {
+				double difference = (targetHeight - pot.get());
 				double velocity = difference / slowingDistance;
 				if(velocity > maxSpeedUp) {
 					velocity = maxSpeedUp;
