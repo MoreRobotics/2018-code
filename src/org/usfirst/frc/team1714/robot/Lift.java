@@ -14,15 +14,13 @@ public class Lift {
 	 */
 	
 	// Lift Pins
-	final int victor1Pin = 0;
-	final int victor2Pin = 1;
+	final int victorsPin = 6;
+
+	final int lsLowPin = 0;
+	final int lsHighPin = 1;
+	final int potPin = 2;
 	
-	final int lsHighPin = 0;
-	final int lsLowPin = 1;
-	final int potPin = 0;
-	
-	VictorSP victor1;
-	VictorSP victor2;
+	VictorSP victors;
 	
 	public DigitalInput lsHigh;
 	public DigitalInput lsLow;
@@ -39,8 +37,7 @@ public class Lift {
 	int targetHeight = targetHeightGround;
 	
 	Lift(){
-		victor1 = new VictorSP(victor1Pin);
-		victor2 = new VictorSP(victor2Pin);
+		victors = new VictorSP(victorsPin);
 		
 		lsHigh = new DigitalInput(lsHighPin);
 		lsLow = new DigitalInput(lsLowPin);
@@ -48,8 +45,7 @@ public class Lift {
 	}
 	
 	void setVictors(double vel) {
-		victor1.set(vel);
-		victor2.set(vel);
+		victors.set(vel);
 	}
 	
 	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround) {

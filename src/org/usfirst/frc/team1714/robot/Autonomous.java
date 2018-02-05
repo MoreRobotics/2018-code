@@ -33,6 +33,7 @@ public class Autonomous {
 	final double switchFarTimeConst = 2;
 	// the distance between the robot's front US sensor and the wall (at end of far path)
 	final double switchFarWallDist = 0;
+	final double scaleFartherTimeConst = 3;
 	
 	// this loop handles all routines that begin with the robot in the left position
 	void updateLeft(Robot robot, String actionSelected, double delay) {
@@ -93,7 +94,24 @@ public class Autonomous {
 				}
 			}
 			else if(actionSelected == "scale") {
-				//TODO
+				// drive until we're next to the switch plate
+				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+					robot.driveVelY = driveSpeed;
+				}
+				else {
+					// once we are, drive forward a little bit more
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
+					else {
+						if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage++;
+						}
+					}
+				}
 			}
 		break;
 		case 2:
@@ -105,7 +123,29 @@ public class Autonomous {
 				}
 			}
 			else if (actionSelected == "scale") {
-				//TODO
+				robot.driveVelY = driveSpeed;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
+				}
+				else {
+					if(scaleLocation == 'R') {
+						if(robot.driveTrain.usFront.getRangeMM() > sideWallDistance) {
+							robot.driveVelX = driveSpeed;
+						}
+						else {
+							robot.driveVelX = 0;
+							mainStage++;
+						}
+					}
+					if(scaleLocation == 'L') {
+						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage = 4;
+						}
+					}
+				}
 			}
 		break;
 		case 3:
@@ -125,7 +165,29 @@ public class Autonomous {
 					robot.driveVelRotation = turnSpeed;
 				}
 			}
-			// TODO: scale code here
+			else if(actionSelected == "scale" && scaleLocation == 'R') {
+				if(robot.driveTrain.gyro.getAngle() > turnAroundMin && robot.driveTrain.gyro.getAngle() < turnAroundMax) {
+					robot.driveVelRotation = 0;
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
+					else {
+						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage++;
+						}
+						else {
+							robot.driveVelY = driveSpeed;
+						}
+					}
+				}
+				else {
+					robot.driveVelRotation = turnSpeed;
+				}
+				mainStage++;
+			}
 		break;
 		// the stage where we score
 		case 4:
@@ -272,7 +334,24 @@ public class Autonomous {
 				}
 			}
 			else if(actionSelected == "scale") {
-				//TODO
+				// drive until we're next to the switch plate
+				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+					robot.driveVelY = driveSpeed;
+				}
+				else {
+					// once we are, drive forward a little bit more
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
+					else {
+						if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage++;
+						}
+					}
+				}
 			}
 		break;
 		case 2:
@@ -285,7 +364,29 @@ public class Autonomous {
 				}
 			}
 			else if (actionSelected == "scale") {
-				// TODO
+				robot.driveVelY = driveSpeed;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
+				}
+				else {
+					if(scaleLocation == 'L') {
+						if(robot.driveTrain.usFront.getRangeMM() > sideWallDistance) {
+							robot.driveVelX = -driveSpeed;
+						}
+						else {
+							robot.driveVelX = 0;
+							mainStage++;
+						}
+					}
+					if(scaleLocation == 'R') {
+						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage = 4;
+						}
+					}
+				}
 			}
 		break;
 		case 3:
@@ -304,6 +405,29 @@ public class Autonomous {
 				else {
 					robot.driveVelRotation = turnSpeed;
 				}
+			}
+			else if(actionSelected == "scale" && scaleLocation == 'L') {
+				if(robot.driveTrain.gyro.getAngle() > 3600 - turnAroundMin && robot.driveTrain.gyro.getAngle() < turnAroundMax) {
+					robot.driveVelRotation = 0;
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
+					else {
+						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
+							robot.driveVelY = 0;
+							timerStarted = false;
+							mainStage++;
+						}
+						else {
+							robot.driveVelY = driveSpeed;
+						}
+					}
+				}
+				else {
+					robot.driveVelRotation = -turnSpeed;
+				}
+				mainStage++;
 			}
 		break;
 		// the stage where we score
@@ -351,7 +475,7 @@ public class Autonomous {
 	}
 	
 	boolean updateCubeScale(Robot robot) {
-		//TODO: lower lift, place cube (at height appropriate for scale)
+		// lower lift, place cube (at height appropriate for scale)
 		if(robot.lift.pot.get() > robot.lift.targetHeightScale - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightScale + forgiveness) {
 			robot.extended = true;
 			if(!timerStarted) {
