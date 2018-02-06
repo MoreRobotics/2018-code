@@ -16,8 +16,8 @@ public class Lift {
 	// Lift Pins
 	final int victorsPin = 6;
 
-	final int lsLowPin = 0;
-	final int lsHighPin = 1;
+	final int lsLowPin = 1;
+	final int lsHighPin = 0;
 	final int potPin = 2;
 	
 	VictorSP victors;

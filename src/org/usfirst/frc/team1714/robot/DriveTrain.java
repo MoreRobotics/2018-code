@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain {
 	/*
@@ -20,12 +21,12 @@ public class DriveTrain {
 	final int mRearLeftPin = 2;  
 	final int mRearRightPin = 3;
 	//Gyro Final Int Here
-	final int usLeftInPin = 0;
-	final int usRightInPin = 1;
-	final int usFrontInPin = 2;
+	final int usLeftInPin = 2;
 	final int usLeftOutPin = 3;
-	final int usRightOutPin = 4;
-	final int usFrontOutPin = 5;
+	final int usRightInPin = 4;
+	final int usRightOutPin = 5;
+	final int usFrontInPin = 6;
+	final int usFrontOutPin = 7;
 	
 	Spark mFrontLeft; 
 	Spark mFrontRight;
@@ -45,7 +46,7 @@ public class DriveTrain {
 		mFrontLeft = new Spark(mRearLeftPin);
 		mFrontLeft = new Spark(mRearRightPin);
 		
-		gyro = new ADXRS450_Gyro();
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS2);
 		usLeft = new Ultrasonic(usLeftOutPin, usLeftInPin);
 		usRight = new Ultrasonic(usRightOutPin, usRightInPin);
 		usFront = new Ultrasonic(usFrontOutPin, usFrontInPin);
