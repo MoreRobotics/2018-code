@@ -10,6 +10,9 @@ package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode.PixelFormat;
 
 public class Robot extends IterativeRobot {
 	//Autonomous Selector Values
@@ -47,6 +50,8 @@ public class Robot extends IterativeRobot {
 	Lift lift;
 	Winch winch;
 	
+	UsbCamera cam;
+	CameraServer camServer;
 
 	@Override
 	public void robotInit() {
@@ -65,9 +70,14 @@ public class Robot extends IterativeRobot {
 		autonomous = new Autonomous();
 		driverControl = new DriverControl();
 		driveTrain = new DriveTrain();
-		intake = new Intake();
+		//intake = new Intake();
 		lift = new Lift();
-		winch = new Winch();
+		//winch = new Winch();
+		
+		camServer = CameraServer.getInstance();
+		cam = camServer.startAutomaticCapture();
+		cam.setResolution(416, 240);
+		cam.setFPS(30);		
 	}
 
 	@Override
@@ -85,6 +95,8 @@ public class Robot extends IterativeRobot {
 				break;
 			}
 		}
+		
+		System.out.println(SmartDashboard.getString("Auto Delay: ", "0.0"));
 	}
 
 	@Override
@@ -105,7 +117,11 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		System.out.println(SmartDashboard.getString("Auto Delay: ", "0.0"));
+		driverControl.update(this);
+		driveTrain.update(driveVelX, driveVelY, driveVelRotation);
+		//intake.update(intakeIn, intakeOut, extended, grasping);
+		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround);
+		//winch.update(winchUp, winchDown);
 	}
 
 	@Override

@@ -43,8 +43,8 @@ public class DriveTrain {
 	DriveTrain() {
 		mFrontLeft = new Spark(mFrontLeftPin);
 		mFrontRight = new Spark(mFrontRightPin);
-		mFrontLeft = new Spark(mRearLeftPin);
-		mFrontLeft = new Spark(mRearRightPin);
+		mRearLeft = new Spark(mRearLeftPin);
+		mRearRight = new Spark(mRearRightPin);
 		
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS2);
 		usLeft = new Ultrasonic(usLeftOutPin, usLeftInPin);
@@ -56,5 +56,6 @@ public class DriveTrain {
 	
 	public void update(double driveVelX, double driveVelY, double driveVelRotation) {
 		mecanum.driveCartesian(driveVelY, driveVelX, driveVelRotation, gyro.getAngle());
+		System.out.println("angle: " + gyro.getAngle());
 	}
 }
