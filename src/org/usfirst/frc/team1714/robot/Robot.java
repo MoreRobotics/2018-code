@@ -25,7 +25,7 @@ public class Robot extends IterativeRobot {
 	private SendableChooser<String> actionChooser = new SendableChooser<>();
 	private SendableChooser<String> lineSideChooser = new SendableChooser<>();
 
-	//Controller Values
+	//Control Values
 	public double
 		driveVelX,
 		driveVelY,
@@ -46,9 +46,9 @@ public class Robot extends IterativeRobot {
 	Autonomous autonomous;
 	DriverControl driverControl;
 	DriveTrain driveTrain;
-	Intake intake;
-	Lift lift;
-	Winch winch;
+	//Intake intake;
+	//Lift lift;
+	//Winch winch;
 	
 	UsbCamera cam;
 	CameraServer camServer;
@@ -67,13 +67,14 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Location:", locationChooser);
 		SmartDashboard.putString("Auto Delay: ", "");
 		
-		autonomous = new Autonomous();
+		//autonomous = new Autonomous();
 		driverControl = new DriverControl();
 		driveTrain = new DriveTrain();
 		//intake = new Intake();
-		lift = new Lift();
+		//lift = new Lift();
 		//winch = new Winch();
 		
+		// init camera, set resolution and fps
 		camServer = CameraServer.getInstance();
 		cam = camServer.startAutomaticCapture();
 		cam.setResolution(416, 240);
@@ -87,6 +88,8 @@ public class Robot extends IterativeRobot {
 		lineSideSelected = lineSideChooser.getSelected();
 		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
 		
+		// repeatedly poll for scale and switch locations. if we poll 10,000 times
+		// and still don't have valid locations, then we skip
 		int i = 0;
 		while (!autonomous.pollLocations()) {
 			i++;
@@ -120,7 +123,7 @@ public class Robot extends IterativeRobot {
 		driverControl.update(this);
 		driveTrain.update(driveVelX, driveVelY, driveVelRotation);
 		//intake.update(intakeIn, intakeOut, extended, grasping);
-		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround);
+		//lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround);
 		//winch.update(winchUp, winchDown);
 	}
 

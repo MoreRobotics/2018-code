@@ -48,6 +48,7 @@ public class Winch {
 				
 		}
 		else {
+			// if we winch far enough, engage the lock
 			if(enc.get() >= encMax) {
 				lock.set(true);
 			}

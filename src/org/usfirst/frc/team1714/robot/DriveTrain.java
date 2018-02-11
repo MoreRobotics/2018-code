@@ -56,6 +56,6 @@ public class DriveTrain {
 	
 	public void update(double driveVelX, double driveVelY, double driveVelRotation) {
 		mecanum.driveCartesian(driveVelY, driveVelX, driveVelRotation, gyro.getAngle());
-		System.out.println("angle: " + gyro.getAngle());
+		//System.out.println("angle: " + gyro.getAngle());
 	}
 }
