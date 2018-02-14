@@ -13,10 +13,10 @@ public class DriverControl {
 	 * 
 	 * 
 	 */
-	
+		
 	final int xboxPort = 2;
-	final int joystickLeftPort = 0;
-	final int joystickRightPort = 1;
+	int joystickLeftPort = 0;
+	int joystickRightPort = 1;
 	
 	XboxController xbox;
 	Joystick joystickLeft;
@@ -28,10 +28,38 @@ public class DriverControl {
 		joystickRight = new Joystick(joystickRightPort);
 	}
 	
-	public void update(Robot robot) {
-		robot.driveVelX = joystickRight.getX();
-		robot.driveVelY = joystickRight.getY();
-		robot.driveVelRotation = joystickRight.getZ();
+	public void update(Robot robot, String hand, String mode) {
+		/*if (hand == "R") {
+			if(mode == "two") {
+				joystickLeftPort = 1;
+				joystickRightPort = 0;
+			}
+			else if(mode == "one") {
+				joystickLeftPort = 4;
+				joystickRightPort = 0;
+			}
+		}
+		else if(hand == "L") {
+			if(mode == "two") {
+				joystickLeftPort = 0;
+				joystickRightPort = 1;
+			}
+			else if(mode == "one") {
+				joystickLeftPort = 1;
+				joystickRightPort = 4;
+			}
+		}
+		*/
+		//if(mode == "two") {
+			robot.driveVelX = joystickRight.getY();
+			robot.driveVelY = -joystickRight.getX();
+			robot.driveVelRotation = joystickLeft.getX();
+		//}
+		/*else if(mode == "one") {
+			robot.driveVelX = joystickRight.getX();
+			robot.driveVelY = joystickRight.getY();
+			robot.driveVelRotation = joystickRight.getZ();
+		}*/
 		
 		robot.liftVel = xbox.getY(Hand.kLeft);
 		

@@ -12,18 +12,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode.PixelFormat;
 
 public class Robot extends IterativeRobot {
 	//Autonomous Selector Values
 	private String locationSelected;
 	private String actionSelected;
 	private String lineSideSelected;
+	//private String driverHand;
+	//private String stickMode;
 	
 	private double initDelay;
 	private SendableChooser<String> locationChooser = new SendableChooser<>();
 	private SendableChooser<String> actionChooser = new SendableChooser<>();
 	private SendableChooser<String> lineSideChooser = new SendableChooser<>();
+	private SendableChooser<String> handChooser = new SendableChooser<>();
+	private SendableChooser<String> stickModeChooser = new SendableChooser<>();
 
 	//Control Values
 	public double
@@ -63,8 +66,16 @@ public class Robot extends IterativeRobot {
 		actionChooser.addObject("Cross Line", "line");
 		lineSideChooser.addObject("Left Side",  "L");
 		lineSideChooser.addObject("Right Side", "R");
+		handChooser.addObject("Right Hand", "R");
+		handChooser.addObject("Left Hand", "L");
+		stickModeChooser.addObject("One Stick", "one");
+		stickModeChooser.addObject("Two Sticks", "two");
 		
 		SmartDashboard.putData("Location:", locationChooser);
+		SmartDashboard.putData("What are we doing:", actionChooser);
+		SmartDashboard.putData("Which Side to Cross the Line On:", lineSideChooser);
+		SmartDashboard.putData("Which Hand:", handChooser);
+		SmartDashboard.putData("Which Control Scheme?", stickModeChooser);
 		SmartDashboard.putString("Auto Delay: ", "");
 		
 		//autonomous = new Autonomous();
@@ -78,7 +89,7 @@ public class Robot extends IterativeRobot {
 		camServer = CameraServer.getInstance();
 		cam = camServer.startAutomaticCapture();
 		cam.setResolution(416, 240);
-		cam.setFPS(30);		
+		cam.setFPS(30);
 	}
 
 	@Override
@@ -120,11 +131,13 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		driverControl.update(this);
+		driverControl.update(this, handChooser.getSelected(), stickModeChooser.getSelected());
 		driveTrain.update(driveVelX, driveVelY, driveVelRotation);
 		//intake.update(intakeIn, intakeOut, extended, grasping);
 		//lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround);
 		//winch.update(winchUp, winchDown);
+		//System.out.println("angle: " + driveTrain.gyro.getAngle());
+		
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -39,6 +40,9 @@ public class Winch {
 	}
 	
 	public void update(boolean winchUp, boolean winchDown) {
+		//debug puts
+		SmartDashboard.putNumber("enc value: ", enc.get());
+		
 		if(winchUp && enc.get() < encMax && !lock.get()) {
 			setVictors(speedUp);
 			

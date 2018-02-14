@@ -455,8 +455,9 @@ public class Autonomous {
 	
 	double forgiveness = 0;
 	boolean updateCubeSwitch(Robot robot) {
+		//TODO: FIX THIS IF STATEMENT
 		// lower lift, place cube (at height appropriate for switch)
-		if(robot.lift.pot.get() > robot.lift.targetHeightSwitch - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightSwitch + forgiveness) {
+		if(/*robot.lift.pot.get() > robot.lift.targetHeightSwitch - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightSwitch + forgiveness */true) {
 			robot.extended = true;
 			if(!timerStarted) {
 				startTime = Timer.getFPGATimestamp();
@@ -475,8 +476,9 @@ public class Autonomous {
 	}
 	
 	boolean updateCubeScale(Robot robot) {
+		//TODO: FIX THIS IF STATEMENT
 		// lower lift, place cube (at height appropriate for scale)
-		if(robot.lift.pot.get() > robot.lift.targetHeightScale - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightScale + forgiveness) {
+		if(/*robot.lift.pot.get() > robot.lift.targetHeightScale - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightScale + forgiveness */ true) {
 			robot.extended = true;
 			if(!timerStarted) {
 				startTime = Timer.getFPGATimestamp();

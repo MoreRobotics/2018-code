@@ -2,6 +2,7 @@ package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Lift {
@@ -49,6 +50,11 @@ public class Lift {
 	}
 	
 	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround) {
+		// debug puts
+		SmartDashboard.putNumber("lift pot value: ", pot.get());
+		SmartDashboard.putBoolean("LiftHigh: ", lsHigh.get());
+		SmartDashboard.putBoolean("LiftLow: ", lsLow.get());
+		
 		if(liftTargetScale) {
 			targetMode = true;
 			targetHeight = targetHeightScale;
