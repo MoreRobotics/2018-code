@@ -51,9 +51,9 @@ public class DriverControl {
 		}
 		*/
 		//if(mode == "two") {
-			robot.driveVelX = joystickRight.getY();
+			robot.driveVelX = -joystickRight.getY();
 			robot.driveVelY = joystickRight.getX();
-			robot.driveVelRotation = joystickLeft.getX();
+			robot.driveVelRotation = joystickRight.getZ();
 		//}
 		/*else if(mode == "one") {
 			robot.driveVelX = joystickRight.getX();

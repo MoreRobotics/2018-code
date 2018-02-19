@@ -41,15 +41,15 @@ public class DriveTrain {
 	private double antiDriftGyroAngle;
 	private double antiDriftVelRotation;
 	private final double antiDriftConstant = 15;
-	private final double joystickDeadzone = 0.05;
+	private final double joystickDeadzone = 0.025;
 	
 	MecanumDrive mecanum;
 	
 	DriveTrain() {
-		mFrontLeft = new Spark(mFrontRightPin);
-		mFrontRight = new Spark(mFrontLeftPin);
-		mRearLeft = new Spark(mRearRightPin);
-		mRearRight = new Spark(mRearLeftPin);
+		mFrontLeft = new Spark(mFrontLeftPin);
+		mFrontRight = new Spark(mFrontRightPin);
+		mRearLeft = new Spark(mRearLeftPin);
+		mRearRight = new Spark(mRearRightPin);
 		mFrontLeft.setInverted(true);
 		mFrontRight.setInverted(true);
 		mRearLeft.setInverted(true);
@@ -67,15 +67,13 @@ public class DriveTrain {
 	public void update(double driveVelX, double driveVelY, double driveVelRotation) {
 		if(driveVelRotation > -joystickDeadzone && driveVelRotation < joystickDeadzone) {
 			//This is neither a direct nor an inverse relationship y=(x/k) - Yonathan
-			antiDriftVelRotation = (antiDriftGyroAngle - gyro.getAngle()) / antiDriftConstant;
+			antiDriftVelRotation = -(antiDriftGyroAngle - gyro.getAngle()) / antiDriftConstant;
 		}
 		else {
 			antiDriftVelRotation = driveVelRotation;
 			antiDriftGyroAngle = gyro.getAngle();
 		}
 		
-		//mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, gyro.getAngle());
-		mFrontRight.set(0.1);
-		System.out.println("angle: " + gyro.getAngle());
+		mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, -gyro.getAngle());
 	}
 }

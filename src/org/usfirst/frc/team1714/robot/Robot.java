@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.Compressor;
 
 public class Robot extends IterativeRobot {
 	//Autonomous Selector Values
@@ -49,8 +50,9 @@ public class Robot extends IterativeRobot {
 	Autonomous autonomous;
 	DriverControl driverControl;
 	DriveTrain driveTrain;
-	//Intake intake;
-	//Lift lift;
+	Compressor compressor;
+	Intake intake;
+	Lift lift;
 	//Winch winch;
 	
 	UsbCamera cam;
@@ -81,9 +83,11 @@ public class Robot extends IterativeRobot {
 		//autonomous = new Autonomous();
 		driverControl = new DriverControl();
 		driveTrain = new DriveTrain();
-		//intake = new Intake();
-		//lift = new Lift();
+		intake = new Intake();
+		lift = new Lift();
 		//winch = new Winch();
+		compressor = new Compressor();
+		compressor.setClosedLoopControl(true);
 		
 		// init camera, set resolution and fps
 		camServer = CameraServer.getInstance();
@@ -133,11 +137,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		driverControl.update(this, handChooser.getSelected(), stickModeChooser.getSelected());
 		driveTrain.update(driveVelX, driveVelY, driveVelRotation);
-		//intake.update(intakeIn, intakeOut, extended, grasping);
-		//lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround);
-		//winch.update(winchUp, winchDown);
-		//System.out.println("angle: " + driveTrain.gyro.getAngle());
-		
+		intake.update(intakeIn, intakeOut, extended, grasping, lift);
+		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		//winch.update(winchUp, winchDown);		
 	}
 
 	@Override

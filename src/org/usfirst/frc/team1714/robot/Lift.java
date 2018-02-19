@@ -49,7 +49,7 @@ public class Lift {
 		victors.set(vel);
 	}
 	
-	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround) {
+	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround, boolean extended) {
 		// debug puts
 		SmartDashboard.putNumber("lift pot value: ", pot.get());
 		SmartDashboard.putBoolean("LiftHigh: ", lsHigh.get());
@@ -72,37 +72,42 @@ public class Lift {
 			targetMode = false;
 		}
 		
-		if(!targetMode) { 
-			if((liftVel < 0 && !lsLow.get()) || (liftVel > 0 && !lsHigh.get())) {
-				setVictors(0);
-			}
-			else {
-				if(liftVel > maxSpeedUp) {
-					setVictors(maxSpeedUp);
-				}
-				else if(liftVel < maxSpeedDown) {
-					setVictors(maxSpeedDown);
+		if(extended) {
+			if(!targetMode) { 
+				if((liftVel < 0 && !lsLow.get()) || (liftVel > 0 && !lsHigh.get())) {
+					setVictors(0);
 				}
 				else {
-					setVictors(liftVel);
+					if(liftVel > maxSpeedUp) {
+						setVictors(maxSpeedUp);
+					}
+					else if(liftVel < maxSpeedDown) {
+						setVictors(maxSpeedDown);
+					}
+					else {
+						setVictors(liftVel);
+					}
+				}
+			}
+			else {
+				if((pot.get() > targetHeight + targetHeightDeadzone) || (pot.get() < targetHeight - targetHeightDeadzone)) {
+					double difference = (targetHeight - pot.get());
+					double velocity = difference / slowingDistance;
+					if(velocity > maxSpeedUp) {
+						velocity = maxSpeedUp;
+					}
+					else if(velocity < maxSpeedDown) {
+						velocity = maxSpeedDown;
+					}
+					setVictors(velocity);
+				}
+				else {
+					setVictors(0);
 				}
 			}
 		}
 		else {
-			if((pot.get() > targetHeight + targetHeightDeadzone) || (pot.get() < targetHeight - targetHeightDeadzone)) {
-				double difference = (targetHeight - pot.get());
-				double velocity = difference / slowingDistance;
-				if(velocity > maxSpeedUp) {
-					velocity = maxSpeedUp;
-				}
-				else if(velocity < maxSpeedDown) {
-					velocity = maxSpeedDown;
-				}
-				setVictors(velocity);
-			}
-			else {
-				setVictors(0);
-			}
+			setVictors(0);
 		}
 	}
 }

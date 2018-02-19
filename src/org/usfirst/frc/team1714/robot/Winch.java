@@ -1,8 +1,9 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Winch {
 	/*
@@ -14,7 +15,8 @@ public class Winch {
 	 */
 	
 	final int victorsPin = 7;
-	final int lockPin = 2;
+	final int lockPin1 = 4;
+	final int lockPin2 = 5;
 	final int encPin1 = 11;
 	final int encPin2 = 12;
 	final int encMax = 1;
@@ -23,7 +25,7 @@ public class Winch {
 	final double speedDown = -0.7;
 	
 	VictorSP victors;
-	Solenoid lock;
+	DoubleSolenoid lock;
 	
 	Encoder enc;
 	
@@ -31,8 +33,8 @@ public class Winch {
 		victors = new VictorSP(victorsPin);
 		
 		enc = new Encoder(encPin1, encPin2);
-		lock = new Solenoid(lockPin);
-		lock.set(false);
+		lock = new DoubleSolenoid(lockPin1, lockPin2);
+		lock.set(Value.kReverse);
 	}
 	
 	void setVictors(double velocity) {
@@ -43,18 +45,18 @@ public class Winch {
 		//debug puts
 		SmartDashboard.putNumber("enc value: ", enc.get());
 		
-		if(winchUp && enc.get() < encMax && !lock.get()) {
+		if(winchUp && enc.get() < encMax && lock.get() != Value.kForward) {
 			setVictors(speedUp);
 			
 		}
-		else if(winchDown && enc.get() > encMin && !lock.get()) {
+		else if(winchDown && enc.get() > encMin && lock.get() != Value.kForward) {
 			setVictors(speedDown);
 				
 		}
 		else {
 			// if we winch far enough, engage the lock
 			if(enc.get() >= encMax) {
-				lock.set(true);
+				lock.set(Value.kForward);
 			}
 			setVictors(0);
 		}
