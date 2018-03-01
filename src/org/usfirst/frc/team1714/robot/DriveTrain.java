@@ -38,6 +38,7 @@ public class DriveTrain {
 	public Ultrasonic usRight;
 	public Ultrasonic usFront;
 	
+	public boolean resetAntiDriftGyroAngle = false;
 	private double antiDriftGyroAngle;
 	private double antiDriftVelRotation;
 	private final double antiDriftConstant = 15;
@@ -64,16 +65,30 @@ public class DriveTrain {
 		mecanum = new MecanumDrive(mFrontLeft, mRearLeft, mFrontRight, mRearRight);
 	}
 	
-	public void update(double driveVelX, double driveVelY, double driveVelRotation) {
+	public void update(double driveVelX, double driveVelY, double driveVelRotation, boolean resetGyro, boolean robotCentric) {
+		if(resetAntiDriftGyroAngle) {
+			antiDriftGyroAngle = gyro.getAngle();
+			resetAntiDriftGyroAngle = false;
+		}
+		
+		if(resetGyro) {
+			gyro.calibrate();
+		}
+		
 		if(driveVelRotation > -joystickDeadzone && driveVelRotation < joystickDeadzone) {
 			//This is neither a direct nor an inverse relationship y=(x/k) - Yonathan
-			antiDriftVelRotation = -(antiDriftGyroAngle - gyro.getAngle()) / antiDriftConstant;
+			antiDriftVelRotation = (antiDriftGyroAngle - gyro.getAngle()) / antiDriftConstant;
 		}
 		else {
 			antiDriftVelRotation = driveVelRotation;
 			antiDriftGyroAngle = gyro.getAngle();
 		}
 		
-		mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, -gyro.getAngle());
+		if(!robotCentric) {
+			mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, -gyro.getAngle());
+		}
+		else if(robotCentric) {
+			mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation);
+		}
 	}
 }

@@ -466,7 +466,7 @@ public class Autonomous {
 			else {
 				if(Timer.getFPGATimestamp() - startTime > extendTime) {
 					robot.grasping = false;
-					robot.intakeOut = true;
+					robot.intakeVel = -1;
 					timerStarted = false;
 					return true;
 				}
@@ -487,7 +487,7 @@ public class Autonomous {
 			else {
 				if(Timer.getFPGATimestamp() - startTime > extendTime) {
 					robot.grasping = false;
-					robot.intakeOut = true;
+					robot.intakeVel = -1;
 					timerStarted = false;
 					return true;
 				}

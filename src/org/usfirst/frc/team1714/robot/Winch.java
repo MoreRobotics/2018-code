@@ -14,7 +14,7 @@ public class Winch {
 	 * 
 	 */
 	
-	final int victorsPin = 7;
+	final int victorsPin = 8;
 	final int lockPin1 = 4;
 	final int lockPin2 = 5;
 	final int encPin1 = 11;

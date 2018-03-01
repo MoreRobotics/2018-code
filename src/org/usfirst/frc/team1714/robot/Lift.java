@@ -1,5 +1,4 @@
 package org.usfirst.frc.team1714.robot;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,7 +14,7 @@ public class Lift {
 	 */
 	
 	// Lift Pins
-	final int victorsPin = 6;
+	final int victorsPin = 9;
 
 	final int lsLowPin = 1;
 	final int lsHighPin = 0;
@@ -23,25 +22,23 @@ public class Lift {
 	
 	VictorSP victors;
 	
-	public DigitalInput lsHigh;
-	public DigitalInput lsLow;
 	public AnalogPotentiometer pot;
 	
 	boolean targetMode = false;
-	final int targetHeightScale = 0;
-	final int targetHeightSwitch = 0;
-	final int targetHeightGround = 0;
-	final int targetHeightDeadzone = 5;
+	final double targetHeightScale = 0.075;
+	final double targetHeightSwitch = 0.085;
+	final double targetHeightGround = 0.118;
+	final double maxHeight = 0.0636;
+	final double minHeight = 0.118;
+	final double targetHeightDeadzone = 5;
 	final double slowingDistance = 50;
 	final double maxSpeedUp = 1;
-	final double maxSpeedDown = -0.7;
-	int targetHeight = targetHeightGround;
+	final double maxSpeedDown = -0.6;
+	double targetHeight = targetHeightGround;
 	
 	Lift(){
 		victors = new VictorSP(victorsPin);
-		
-		lsHigh = new DigitalInput(lsHighPin);
-		lsLow = new DigitalInput(lsLowPin);
+		victors.setInverted(true);
 		pot = new AnalogPotentiometer(potPin);
 	}
 	
@@ -52,8 +49,6 @@ public class Lift {
 	public void update(double liftVel, boolean liftTargetScale, boolean liftTargetSwitch, boolean liftTargetGround, boolean extended) {
 		// debug puts
 		SmartDashboard.putNumber("lift pot value: ", pot.get());
-		SmartDashboard.putBoolean("LiftHigh: ", lsHigh.get());
-		SmartDashboard.putBoolean("LiftLow: ", lsLow.get());
 		
 		if(liftTargetScale) {
 			targetMode = true;
@@ -74,7 +69,7 @@ public class Lift {
 		
 		if(extended) {
 			if(!targetMode) { 
-				if((liftVel < 0 && !lsLow.get()) || (liftVel > 0 && !lsHigh.get())) {
+				if(/*(liftVel < 0 && pot.get() >= minHeight) || (liftVel > 0 && pot.get() <= maxHeight)*/ false) {
 					setVictors(0);
 				}
 				else {

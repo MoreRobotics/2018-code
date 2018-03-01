@@ -34,17 +34,18 @@ public class Robot extends IterativeRobot {
 		driveVelX,
 		driveVelY,
 		driveVelRotation,
-		liftVel;
+		liftVel,
+		intakeVel;
 	public boolean
+		resetGyro,
 		liftTargetScale,
 		liftTargetSwitch,
 		liftTargetGround,
 		winchUp,
 		winchDown,
-		intakeIn,
-		intakeOut,
 		extended,
-		grasping;
+		grasping,
+		robotCentric;
 	
 	//Robot Classes
 	Autonomous autonomous;
@@ -64,13 +65,13 @@ public class Robot extends IterativeRobot {
 		locationChooser.addObject("Middle", "middle");
 		locationChooser.addObject("Right", "right");
 		actionChooser.addObject("Score on Switch", "switch");
-		actionChooser.addObject("Score on Scale (NOT YET FUNCTIONAL)", "scale");
+		actionChooser.addObject("Score on Scale", "scale");
 		actionChooser.addObject("Cross Line", "line");
 		lineSideChooser.addObject("Left Side",  "L");
 		lineSideChooser.addObject("Right Side", "R");
-		handChooser.addObject("Right Hand", "R");
+		handChooser.addDefault("Right Hand", "R");
 		handChooser.addObject("Left Hand", "L");
-		stickModeChooser.addObject("One Stick", "one");
+		stickModeChooser.addDefault("One Stick", "one");
 		stickModeChooser.addObject("Two Sticks", "two");
 		
 		SmartDashboard.putData("Location:", locationChooser);
@@ -136,12 +137,18 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		driverControl.update(this, handChooser.getSelected(), stickModeChooser.getSelected());
-		driveTrain.update(driveVelX, driveVelY, driveVelRotation);
-		intake.update(intakeIn, intakeOut, extended, grasping, lift);
-		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		driveTrain.update(driveVelX, driveVelY, driveVelRotation, resetGyro, robotCentric);
+		intake.update(intakeVel, extended, grasping, lift);
+		//lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		//System.out.println("lift pot" + lift.pot.get());
 		//winch.update(winchUp, winchDown);		
 	}
-
+	
+	@Override
+	public void disabledInit() {
+		driveTrain.resetAntiDriftGyroAngle = true;
+	}
+	
 	@Override
 	public void testPeriodic() {
 	}

@@ -3,8 +3,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 
-
-
 public class DriverControl {
 	/*
 	 * 
@@ -29,51 +27,40 @@ public class DriverControl {
 	}
 	
 	public void update(Robot robot, String hand, String mode) {
-		/*if (hand == "R") {
-			if(mode == "two") {
-				joystickLeftPort = 1;
-				joystickRightPort = 0;
-			}
-			else if(mode == "one") {
-				joystickLeftPort = 4;
-				joystickRightPort = 0;
-			}
-		}
-		else if(hand == "L") {
-			if(mode == "two") {
-				joystickLeftPort = 0;
-				joystickRightPort = 1;
-			}
-			else if(mode == "one") {
-				joystickLeftPort = 1;
-				joystickRightPort = 4;
-			}
-		}
-		*/
-		//if(mode == "two") {
+		if(mode == "one") {
 			robot.driveVelX = -joystickRight.getY();
 			robot.driveVelY = joystickRight.getX();
 			robot.driveVelRotation = joystickRight.getZ();
-		//}
-		/*else if(mode == "one") {
-			robot.driveVelX = joystickRight.getX();
-			robot.driveVelY = joystickRight.getY();
-			robot.driveVelRotation = joystickRight.getZ();
-		}*/
+		}
+		else if (mode == "two"){
+			if(hand == "R") {
+				robot.driveVelX = -joystickRight.getY();
+				robot.driveVelY = joystickRight.getX();
+				robot.driveVelRotation = joystickLeft.getX();
+			}
+			else if(hand == "L") {
+				robot.driveVelX = -joystickLeft.getY();
+				robot.driveVelY = joystickLeft.getX();
+				robot.driveVelRotation = joystickRight.getX();
+			}
+		}
 		
-		robot.liftVel = xbox.getY(Hand.kLeft);
+		robot.liftVel = -xbox.getY(Hand.kLeft);
 		
 		if(xbox.getAButton()) {
-			robot.intakeIn = true;
-			robot.intakeOut = false;
+			robot.intakeVel = 0.5;
 		}
 		else if(xbox.getYButton()) {
-			robot.intakeIn = false;
-			robot.intakeOut = true;
+			robot.intakeVel = -1;
 		}
 		else if(xbox.getXButton() || xbox.getBButton()) {
-			robot.intakeIn = false;
-			robot.intakeOut = false;
+			robot.intakeVel = 0;
+		}
+		else if(Math.abs(xbox.getY(Hand.kRight)) > 0.05 ) {
+			robot.intakeVel = xbox.getY(Hand.kRight);
+		}
+		else {
+			robot.intakeVel = 0;
 		}
 		
 		if(xbox.getPOV() == 0) {
@@ -101,6 +88,20 @@ public class DriverControl {
 		}
 		else if(xbox.getTriggerAxis(Hand.kRight) > 0.7) {
 			robot.grasping = false;
+		}
+		
+		if(joystickRight.getRawButton(7)) {
+			robot.resetGyro = true;
+		}
+		else {
+			robot.resetGyro = false;
+		}
+		
+		if(joystickLeft.getRawButton(3)) {
+			robot.robotCentric = true;
+		}
+		else {
+			robot.robotCentric = false;
 		}
 	}
 }
