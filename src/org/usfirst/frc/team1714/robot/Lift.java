@@ -2,6 +2,7 @@ package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 
 public class Lift {
@@ -16,13 +17,20 @@ public class Lift {
 	// Lift Pins
 	final int victorsPin = 9;
 
-	final int lsLowPin = 1;
-	final int lsHighPin = 0;
+	final int lsBaseLowPin = 1;
+	final int lsBaseHighPin = 0;
+	final int lsCarriageLowPin = 2;
+	final int lsCarriageHighPin = 3;
 	final int potPin = 2;
 	
 	VictorSP victors;
 	
 	public AnalogPotentiometer pot;
+	
+	DigitalInput lsBaseLow;
+	DigitalInput lsBaseHigh;
+	DigitalInput lsCarriageLow;
+	DigitalInput lsCarriageHigh;
 	
 	boolean targetMode = false;
 	final double targetHeightScale = 0.075;
@@ -40,6 +48,11 @@ public class Lift {
 		victors = new VictorSP(victorsPin);
 		victors.setInverted(true);
 		pot = new AnalogPotentiometer(potPin);
+		
+		lsBaseLow = new DigitalInput(lsBaseLowPin);
+		lsBaseHigh = new DigitalInput(lsBaseHighPin);
+		lsCarriageLow = new DigitalInput(lsCarriageLowPin);
+		lsCarriageHigh = new DigitalInput(lsCarriageHighPin);
 	}
 	
 	void setVictors(double vel) {
@@ -69,7 +82,7 @@ public class Lift {
 		
 		if(extended) {
 			if(!targetMode) { 
-				if(/*(liftVel < 0 && pot.get() >= minHeight) || (liftVel > 0 && pot.get() <= maxHeight)*/ false) {
+				if((liftVel > 0 && (!lsBaseHigh.get() && !lsCarriageHigh.get())) || (liftVel < 0 && (!lsBaseLow.get() && !lsCarriageLow.get()))) {
 					setVictors(0);
 				}
 				else {
