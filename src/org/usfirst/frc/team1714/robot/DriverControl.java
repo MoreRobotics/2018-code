@@ -92,12 +92,13 @@ public class DriverControl {
 		
 		if(joystickRight.getRawButton(7)) {
 			robot.resetGyro = true;
+			robot.gyroOffset = 0;
 		}
 		else {
 			robot.resetGyro = false;
 		}
 		
-		if(joystickLeft.getRawButton(3)) {
+		if(joystickLeft.getRawButton(3) || joystickRight.getRawButton(2)) {
 			robot.robotCentric = true;
 		}
 		else {

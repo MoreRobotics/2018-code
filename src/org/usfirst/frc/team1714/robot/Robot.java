@@ -35,7 +35,8 @@ public class Robot extends IterativeRobot {
 		driveVelY,
 		driveVelRotation,
 		liftVel,
-		intakeVel;
+		intakeVel,
+		gyroOffset;
 	public boolean
 		resetGyro,
 		liftTargetScale,
@@ -64,24 +65,25 @@ public class Robot extends IterativeRobot {
 		locationChooser.addDefault("Left", "left");
 		locationChooser.addObject("Middle", "middle");
 		locationChooser.addObject("Right", "right");
-		actionChooser.addObject("Score on Switch", "switch");
+		locationChooser.addObject("Do Nothing", "no");
+		actionChooser.addDefault("Score on Switch", "switch");
 		actionChooser.addObject("Score on Scale", "scale");
 		actionChooser.addObject("Cross Line", "line");
-		lineSideChooser.addObject("Left Side",  "L");
+		lineSideChooser.addDefault("Left Side",  "L");
 		lineSideChooser.addObject("Right Side", "R");
 		handChooser.addDefault("Right Hand", "R");
 		handChooser.addObject("Left Hand", "L");
-		stickModeChooser.addDefault("One Stick", "one");
-		stickModeChooser.addObject("Two Sticks", "two");
+		stickModeChooser.addDefault("Two Sticks", "two");
+		stickModeChooser.addObject("One Stick", "one");
 		
 		SmartDashboard.putData("Location:", locationChooser);
 		SmartDashboard.putData("What are we doing:", actionChooser);
 		SmartDashboard.putData("Which Side to Cross the Line On:", lineSideChooser);
 		SmartDashboard.putData("Which Hand:", handChooser);
 		SmartDashboard.putData("Which Control Scheme?", stickModeChooser);
-		SmartDashboard.putString("Auto Delay: ", "");
+		SmartDashboard.putString("Auto Delay: ", "0");
 		
-		//autonomous = new Autonomous();
+		autonomous = new Autonomous();
 		driverControl = new DriverControl();
 		driveTrain = new DriveTrain();
 		intake = new Intake();
@@ -94,7 +96,8 @@ public class Robot extends IterativeRobot {
 		camServer = CameraServer.getInstance();
 		cam = camServer.startAutomaticCapture();
 		cam.setResolution(416, 240);
-		cam.setFPS(30);
+		cam.setFPS(15);
+		SmartDashboard.putNumber("cam width", cam.getVideoMode().width);
 	}
 
 	@Override
@@ -103,6 +106,7 @@ public class Robot extends IterativeRobot {
 		actionSelected = actionChooser.getSelected();
 		lineSideSelected = lineSideChooser.getSelected();
 		initDelay = Double.parseDouble(SmartDashboard.getString("Auto Delay: ", "0.0"));
+		grasping = true;
 		
 		// repeatedly poll for scale and switch locations. if we poll 10,000 times
 		// and still don't have valid locations, then we skip
@@ -114,8 +118,6 @@ public class Robot extends IterativeRobot {
 				break;
 			}
 		}
-		
-		System.out.println(SmartDashboard.getString("Auto Delay: ", "0.0"));
 	}
 
 	@Override
@@ -124,24 +126,47 @@ public class Robot extends IterativeRobot {
 			default:
 			case "left":
 				autonomous.updateLeft(this, actionSelected, initDelay);
+				gyroOffset = 90;
 				break;
 			case "middle":
 				autonomous.updateMiddle(this, actionSelected, initDelay, lineSideSelected);
+				if(lineSideSelected == "R") {
+					gyroOffset = 90;
+				}
+				else {
+					gyroOffset = 90;
+				}
 				break;
 			case "right":
 				autonomous.updateRight(this, actionSelected, initDelay);
+				gyroOffset = -90;
+				break;
+			case "no":
 				break;
 		}
+		driveTrain.update(driveVelX, driveVelY, driveVelRotation, resetGyro, robotCentric, gyroOffset);
+		intake.update(intakeVel, extended, grasping, lift);
+		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		SmartDashboard.putNumber("Gyro Offset", gyroOffset);
+		SmartDashboard.putString("Switch Location", String.valueOf(autonomous.switchLocation));
+		SmartDashboard.putNumber("AUTO STAGE", autonomous.mainStage);
+		SmartDashboard.putNumber("Lift Velocity", lift.victors.get());
 	}
-
+	
+	@Override
+	public void teleopInit() {
+		//gyroOffset = 0;
+	}
+	
 	@Override
 	public void teleopPeriodic() {
 		driverControl.update(this, handChooser.getSelected(), stickModeChooser.getSelected());
-		driveTrain.update(driveVelX, driveVelY, driveVelRotation, resetGyro, robotCentric);
+		driveTrain.update(driveVelX, driveVelY, driveVelRotation, resetGyro, robotCentric, gyroOffset);
 		intake.update(intakeVel, extended, grasping, lift);
-		//lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
 		//System.out.println("lift pot" + lift.pot.get());
-		//winch.update(winchUp, winchDown);		
+		//winch.update(winchUp, winchDown);
+		SmartDashboard.putNumber("Gyro Offset", gyroOffset);
 	}
 	
 	@Override

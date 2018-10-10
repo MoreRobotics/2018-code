@@ -37,11 +37,18 @@ public class Intake {
 		mRight = new Victor(mRightPin);
 		extender = new DoubleSolenoid(extenderPin1, extenderPin2);
 		grasper = new DoubleSolenoid(grasperPin1, grasperPin2);
+		
+		grasper.set(Value.kReverse);
 	}
 	
 	void setVictors(double vel) {
+		if(vel > 0.8) {
+			mRight.set(0.8);
+		}
+		else {
+			mRight.set(vel/1.2);
+		}
 		mLeft.set(vel);
-		mRight.set(vel);
 	}
 	
 	public void update(double intakeVel, boolean extended, boolean grasping, Lift lift) {
@@ -55,12 +62,14 @@ public class Intake {
 		}
 				
 		if(grasping) {
-			grasper.set(Value.kForward);
-		}
-		else if(!grasping) {
 			grasper.set(Value.kReverse);
 		}
+		else if(!grasping) {
+			grasper.set(Value.kForward);
+		}
+		
 		SmartDashboard.putBoolean("Grasping?", grasping);
+		SmartDashboard.putBoolean("Extended?", extended);
 	}
 	
 }

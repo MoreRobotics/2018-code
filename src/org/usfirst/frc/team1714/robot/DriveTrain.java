@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveTrain {
@@ -21,12 +22,12 @@ public class DriveTrain {
 	final int mRearLeftPin = 2;  
 	final int mRearRightPin = 3;
 	//Gyro Final Int Here
-	final int usLeftInPin = 2;
-	final int usLeftOutPin = 3;
-	final int usRightInPin = 4;
-	final int usRightOutPin = 5;
-	final int usFrontInPin = 6;
-	final int usFrontOutPin = 7;
+	final int usLeftInPin = 3;
+	final int usLeftOutPin = 2;
+	final int usRightInPin = 8;
+	final int usRightOutPin = 9;
+	final int usFrontInPin = 7;
+	final int usFrontOutPin = 6;
 	
 	Spark mFrontLeft; 
 	Spark mFrontRight;
@@ -61,11 +62,21 @@ public class DriveTrain {
 		usLeft = new Ultrasonic(usLeftOutPin, usLeftInPin);
 		usRight = new Ultrasonic(usRightOutPin, usRightInPin);
 		usFront = new Ultrasonic(usFrontOutPin, usFrontInPin);
+		usLeft.setAutomaticMode(true);
+		usRight.setAutomaticMode(true);
+		usFront.setAutomaticMode(true);
 		
 		mecanum = new MecanumDrive(mFrontLeft, mRearLeft, mFrontRight, mRearRight);
 	}
 	
-	public void update(double driveVelX, double driveVelY, double driveVelRotation, boolean resetGyro, boolean robotCentric) {
+	public void update(double driveVelX, double driveVelY, double driveVelRotation, boolean resetGyro, boolean robotCentric, double gyroOffset) {
+		SmartDashboard.putNumber("right us", usRight.getRangeMM());
+		SmartDashboard.putNumber("left us", usLeft.getRangeMM());
+		SmartDashboard.putNumber("front us", usFront.getRangeMM());
+		SmartDashboard.putNumber("gyro value", gyro.getAngle());
+
+		
+		
 		if(resetAntiDriftGyroAngle) {
 			antiDriftGyroAngle = gyro.getAngle();
 			resetAntiDriftGyroAngle = false;
@@ -85,7 +96,7 @@ public class DriveTrain {
 		}
 		
 		if(!robotCentric) {
-			mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, -gyro.getAngle());
+			mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation, -(gyro.getAngle() + gyroOffset));
 		}
 		else if(robotCentric) {
 			mecanum.driveCartesian(driveVelY, driveVelX, antiDriftVelRotation);

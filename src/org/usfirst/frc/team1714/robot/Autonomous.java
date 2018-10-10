@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1714.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autonomous {
 	final int d1 = 0; //distance from starting position to "near path"
@@ -10,14 +11,16 @@ public class Autonomous {
 	final int d5 = 0; //the distance from middle starting position to right starting position
 	final int d6 = d4 - d5; //the distance from middle starting position to left starting position
 	
-	// TODO: FIX THESE PLACEHOLDERS
-	final double switchDetectDistance = 0;
+	// 20 inches
+	final double switchDetectDistance = 635;
 	final double driverWallDistance = 0;
-	final double sideWallDistance = 0;
+	// 30 inches
+	final double sideWallDistance = 762;
 	final double driveSpeed = 0.75;
 	final double turnSpeed = 0.5;
 	final double extendTime = 1;
-	
+	final double switchFarWallDist = 0;
+
 	int mainStage = 0;
 	
 	char switchLocation = 0;
@@ -32,7 +35,6 @@ public class Autonomous {
 	// the constant controlling how far the robot drives after reaching the switch (when going the far path)
 	final double switchFarTimeConst = 2;
 	// the distance between the robot's front US sensor and the wall (at end of far path)
-	final double switchFarWallDist = 0;
 	final double scaleFartherTimeConst = 3;
 	
 	// this loop handles all routines that begin with the robot in the left position
@@ -51,31 +53,42 @@ public class Autonomous {
 		case 1:
 			if(actionSelected == "line") {
 				// drive until we're next to the switch plate
-				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
+				robot.driveVelX = driveSpeed;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
 				}
 				else {
-					robot.driveVelY = 0;
-					// jump to cube placement
-					mainStage = 5;
+					if(Timer.getFPGATimestamp() - startTime > 5) {
+						robot.driveVelX = 0;
+						timerStarted = false;
+						mainStage = 5;
+					}
 				}
 			}
 			else if(actionSelected == "switch")
 			{
+				robot.extended = true;
+				robot.liftTargetGround = true;
 				if(switchLocation == 'L') {
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
 					// drive until we're next to the switch plate
 					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = driveSpeed;
+						robot.driveVelX = driveSpeed;
 					}
-					else {
-						robot.driveVelY = 0;
-						mainStage = 4;
+					else if (Timer.getFPGATimestamp() - startTime > 3) {
+						robot.driveVelX = 0;
+						timerStarted = false;
+						mainStage = 2;
 					}
 				}
 				else if(switchLocation == 'R') {
 					// drive until we're next to the switch plate
 					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = driveSpeed;
+						robot.driveVelX = driveSpeed;
 					}
 					else {
 						// once we are, drive forward a little bit more
@@ -85,7 +98,7 @@ public class Autonomous {
 						}
 						else {
 							if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
-								robot.driveVelY = 0;
+								robot.driveVelX = 0;
 								timerStarted = false;
 								mainStage++;
 							}
@@ -93,58 +106,33 @@ public class Autonomous {
 					}
 				}
 			}
-			else if(actionSelected == "scale") {
-				// drive until we're next to the switch plate
-				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
-				}
-				else {
-					// once we are, drive forward a little bit more
-					if(!timerStarted) {
-						startTime = Timer.getFPGATimestamp();
-						timerStarted = true;
-					}
-					else {
-						if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
-							timerStarted = false;
-							mainStage++;
-						}
-					}
-				}
-			}
 		break;
 		case 2:
 			if(actionSelected == "switch" && switchLocation == 'R') {
-				robot.driveVelX = driveSpeed;
-				if(robot.driveTrain.usFront.getRangeMM() > switchFarWallDist) {
-					robot.driveVelX = 0;
-					mainStage++;
-				}
-			}
-			else if (actionSelected == "scale") {
+				robot.extended = true;
+				robot.liftTargetSwitch = true;
 				robot.driveVelY = driveSpeed;
 				if(!timerStarted) {
 					startTime = Timer.getFPGATimestamp();
 					timerStarted = true;
 				}
-				else {
-					if(scaleLocation == 'R') {
-						if(robot.driveTrain.usFront.getRangeMM() > sideWallDistance) {
-							robot.driveVelX = driveSpeed;
-						}
-						else {
-							robot.driveVelX = 0;
-							mainStage++;
-						}
-					}
-					if(scaleLocation == 'L') {
-						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
-							timerStarted = false;
-							mainStage = 4;
-						}
-					}
+				if(robot.driveTrain.usFront.getRangeMM() < switchFarWallDist && Timer.getFPGATimestamp() - startTime > 3) {
+					robot.driveVelY = 0;
+					timerStarted = false;
+					mainStage++;
+				}
+			}
+			else if(actionSelected == "switch" && switchLocation == 'L') {
+				robot.liftTargetGround = false;
+				robot.liftTargetSwitch = true;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
+				}
+				else if (Timer.getFPGATimestamp() - startTime > 8) {
+					robot.driveVelX = 0;
+					timerStarted = false;
+					mainStage = 4;
 				}
 			}
 		break;
@@ -154,39 +142,16 @@ public class Autonomous {
 				if(robot.driveTrain.gyro.getAngle() > turnAroundMin && robot.driveTrain.gyro.getAngle() < turnAroundMax) {
 					robot.driveVelRotation = 0;
 					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = -driveSpeed;
+						robot.driveVelX = -driveSpeed;
 					}
 					else {
-						robot.driveVelY = 0;
-						mainStage++;
+						robot.driveVelX = 0;
+						mainStage = 6;
 					}
 				}
 				else {
 					robot.driveVelRotation = turnSpeed;
 				}
-			}
-			else if(actionSelected == "scale" && scaleLocation == 'R') {
-				if(robot.driveTrain.gyro.getAngle() > turnAroundMin && robot.driveTrain.gyro.getAngle() < turnAroundMax) {
-					robot.driveVelRotation = 0;
-					if(!timerStarted) {
-						startTime = Timer.getFPGATimestamp();
-						timerStarted = true;
-					}
-					else {
-						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
-							timerStarted = false;
-							mainStage++;
-						}
-						else {
-							robot.driveVelY = driveSpeed;
-						}
-					}
-				}
-				else {
-					robot.driveVelRotation = turnSpeed;
-				}
-				mainStage++;
 			}
 		break;
 		// the stage where we score
@@ -204,9 +169,50 @@ public class Autonomous {
 		break;
 		case 5:
 			// set everything to 0
-			robot.driveVelX = 0;
 			robot.driveVelY = 0;
+			robot.driveVelX = 0;
 			robot.driveVelRotation = 0;
+		break;
+		case 6:
+			if(switchLocation == 'L')
+			{
+				robot.driveVelY = -driveSpeed;
+			}
+			else if(switchLocation == 'R')
+			{
+				robot.driveVelY = driveSpeed;
+			}
+			if(robot.driveTrain.usFront.getRangeMM() > 700) {
+				robot.extended = true;
+				mainStage++;
+			}
+		break;
+		case 7:
+			if(!timerStarted) {
+				startTime = Timer.getFPGATimestamp();
+				timerStarted = true;
+			}
+			else {
+				if(Timer.getFPGATimestamp() - startTime > 1) {
+					if(switchLocation == 'L')
+					{
+						robot.driveVelY = driveSpeed;
+					}
+					else if(switchLocation == 'R')
+					{
+						robot.driveVelY = -driveSpeed;
+					}
+					timerStarted = false;
+					mainStage++;
+				}
+			}
+			robot.liftTargetSwitch = true;
+		break;
+		case 8:
+			if(robot.driveTrain.usFront.getRangeMM() < 200) {
+				robot.driveVelY = 0;
+				mainStage = 4;
+			}
 		break;
 		}
 	}
@@ -223,10 +229,10 @@ public class Autonomous {
 		case 1:
 			// Drive until D1
 			if(robot.driveTrain.usFront.getRangeMM() < driverWallDistance) {
-				robot.driveVelY = driveSpeed;
+				robot.driveVelX = driveSpeed;
 			}
 			else {
-				robot.driveVelY = 0;
+				robot.driveVelX = 0;
 				mainStage++;
 			}
 		break;
@@ -234,20 +240,20 @@ public class Autonomous {
 			if(lineSideSelected == "L") {
 				//drive to d6
 				if(robot.driveTrain.usRight.getRangeMM() > sideWallDistance) {
-					robot.driveVelX = -driveSpeed;
+					robot.driveVelY = -driveSpeed;
 				}
 				else {
-					robot.driveVelX = 0;
+					robot.driveVelY = 0;
 					mainStage++;
 				}
 			}
 			else if(lineSideSelected == "R") {
 				// drive to d5
 				if(robot.driveTrain.usLeft.getRangeMM() > sideWallDistance) {
-					robot.driveVelX = driveSpeed;
+					robot.driveVelY = driveSpeed;
 				}
 				else {
-					robot.driveVelX = 0;
+					robot.driveVelY = 0;
 					mainStage++;
 				}
 			}
@@ -256,27 +262,27 @@ public class Autonomous {
 			// drive to d3 - d1
 			if(lineSideSelected == "L") {
 				if(robot.driveTrain.usLeft.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
+					robot.driveVelX = driveSpeed;
 				}
 				else {
-					robot.driveVelY = 0;
+					robot.driveVelX = 0;
 					mainStage++;
 				}
 			}
 			else if(lineSideSelected == "R") {
 				if(robot.driveTrain.usRight.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
+					robot.driveVelX = driveSpeed;
 				}
 				else {
-					robot.driveVelY = 0;
+					robot.driveVelX = 0;
 					mainStage++;
 				}
 			}
 		break;
 		case 4:
 			// set everything to 0
-			robot.driveVelX = 0;
 			robot.driveVelY = 0;
+			robot.driveVelX = 0;
 		break;
 		}
 	}
@@ -291,21 +297,41 @@ public class Autonomous {
 		case 1:
 			if(actionSelected == "line") {
 				// drive until we're next to the switch plate
-				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
+				robot.driveVelX = driveSpeed;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
 				}
 				else {
-					robot.driveVelY = 0;
-					// jump to cube placement
-					mainStage = 5;
+					if(Timer.getFPGATimestamp() - startTime > 5) {
+						robot.driveVelX = 0;
+						timerStarted = false;
+						mainStage = 5;
+					}
 				}
 			}
 			else if(actionSelected == "switch")
 			{
-				if(switchLocation == 'L') {
+				robot.extended = true;
+				robot.liftTargetSwitch = true;
+				if(switchLocation == 'R') {
+					if(!timerStarted) {
+						startTime = Timer.getFPGATimestamp();
+						timerStarted = true;
+					}
 					// drive until we're next to the switch plate
 					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = driveSpeed;
+						robot.driveVelX = driveSpeed;
+					}
+					else if (Timer.getFPGATimestamp() - startTime > 3) {
+						robot.driveVelX = 0;
+						mainStage = 4;
+					}
+				}
+				else if(switchLocation == 'L') {
+					// drive until we're next to the switch plate
+					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
+						robot.driveVelX = driveSpeed;
 					}
 					else {
 						// once we are, drive forward a little bit more
@@ -315,28 +341,18 @@ public class Autonomous {
 						}
 						else {
 							if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
-								robot.driveVelY = 0;
+								robot.driveVelX = 0;
 								timerStarted = false;
 								mainStage++;
 							}
 						}
 					}
 				}
-				else if(switchLocation == 'R') {
-					// drive until we're next to the switch plate
-					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = driveSpeed;
-					}
-					else {
-						robot.driveVelY = 0;
-						mainStage = 4;
-					}
-				}
 			}
 			else if(actionSelected == "scale") {
 				// drive until we're next to the switch plate
 				if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-					robot.driveVelY = driveSpeed;
+					robot.driveVelX = driveSpeed;
 				}
 				else {
 					// once we are, drive forward a little bit more
@@ -346,7 +362,7 @@ public class Autonomous {
 					}
 					else {
 						if(Timer.getFPGATimestamp() - startTime > (switchFarTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
+							robot.driveVelX = 0;
 							timerStarted = false;
 							mainStage++;
 						}
@@ -357,14 +373,20 @@ public class Autonomous {
 		case 2:
 			if(actionSelected == "switch" && switchLocation == 'L') {
 				// drive until D4
-				robot.driveVelX = -driveSpeed;
-				if(robot.driveTrain.usFront.getRangeMM() > switchFarWallDist) {
-					robot.driveVelX = 0;
+				robot.extended = true;
+				robot.liftTargetSwitch = true;
+				robot.driveVelY = driveSpeed;
+				if(!timerStarted) {
+					startTime = Timer.getFPGATimestamp();
+					timerStarted = true;
+				}
+				if(robot.driveTrain.usFront.getRangeMM() < switchFarWallDist && Timer.getFPGATimestamp() - startTime > 3) {
+					robot.driveVelY = 0;
 					mainStage++;
 				}
 			}
 			else if (actionSelected == "scale") {
-				robot.driveVelY = driveSpeed;
+				robot.driveVelX = driveSpeed;
 				if(!timerStarted) {
 					startTime = Timer.getFPGATimestamp();
 					timerStarted = true;
@@ -372,16 +394,16 @@ public class Autonomous {
 				else {
 					if(scaleLocation == 'L') {
 						if(robot.driveTrain.usFront.getRangeMM() > sideWallDistance) {
-							robot.driveVelX = -driveSpeed;
+							robot.driveVelY = -driveSpeed;
 						}
 						else {
-							robot.driveVelX = 0;
+							robot.driveVelY = 0;
 							mainStage++;
 						}
 					}
 					if(scaleLocation == 'R') {
 						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
+							robot.driveVelX = 0;
 							timerStarted = false;
 							mainStage = 4;
 						}
@@ -395,10 +417,10 @@ public class Autonomous {
 				if(robot.driveTrain.gyro.getAngle() > 3600 - turnAroundMin && robot.driveTrain.gyro.getAngle() < turnAroundMax) {
 					robot.driveVelRotation = 0;
 					if(robot.driveTrain.usFront.getRangeMM() > switchDetectDistance) {
-						robot.driveVelY = -driveSpeed;
+						robot.driveVelX = -driveSpeed;
 					}
 					else {
-						robot.driveVelY = 0;
+						robot.driveVelX = 0;
 						mainStage++;
 					}
 				}
@@ -415,12 +437,12 @@ public class Autonomous {
 					}
 					else {
 						if(Timer.getFPGATimestamp() - startTime > (scaleFartherTimeConst/driveSpeed)) {
-							robot.driveVelY = 0;
+							robot.driveVelX = 0;
 							timerStarted = false;
 							mainStage++;
 						}
 						else {
-							robot.driveVelY = driveSpeed;
+							robot.driveVelX = driveSpeed;
 						}
 					}
 				}
@@ -445,8 +467,8 @@ public class Autonomous {
 		break;
 		case 5:
 			// set everything to 0
-			robot.driveVelX = 0;
 			robot.driveVelY = 0;
+			robot.driveVelX = 0;
 			robot.driveVelRotation = 0;
 		break;
 		}
@@ -455,44 +477,44 @@ public class Autonomous {
 	
 	double forgiveness = 0;
 	boolean updateCubeSwitch(Robot robot) {
-		//TODO: FIX THIS IF STATEMENT
 		// lower lift, place cube (at height appropriate for switch)
-		if(/*robot.lift.pot.get() > robot.lift.targetHeightSwitch - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightSwitch + forgiveness */true) {
-			robot.extended = true;
-			if(!timerStarted) {
-				startTime = Timer.getFPGATimestamp();
-				timerStarted = true;
-			}
-			else {
-				if(Timer.getFPGATimestamp() - startTime > extendTime) {
+		//if(robot.lift.pot.get() > robot.lift.targetHeightSwitch - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightSwitch + forgiveness) {
+		robot.extended = true;
+		if(!timerStarted) {
+			startTime = Timer.getFPGATimestamp();
+			timerStarted = true;
+		}
+		else {
+			if(Timer.getFPGATimestamp() - startTime > extendTime) {
+				robot.liftTargetSwitch = true;
+				if(robot.lift.pot.get() > robot.lift.targetHeightSwitch - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightSwitch + forgiveness) {
 					robot.grasping = false;
-					robot.intakeVel = -1;
-					timerStarted = false;
 					return true;
 				}
 			}
 		}
+		//}
 		return false;
 	}
 	
 	boolean updateCubeScale(Robot robot) {
 		//TODO: FIX THIS IF STATEMENT
 		// lower lift, place cube (at height appropriate for scale)
-		if(/*robot.lift.pot.get() > robot.lift.targetHeightScale - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightScale + forgiveness */ true) {
-			robot.extended = true;
-			if(!timerStarted) {
-				startTime = Timer.getFPGATimestamp();
-				timerStarted = true;
-			}
-			else {
-				if(Timer.getFPGATimestamp() - startTime > extendTime) {
+		robot.extended = true;
+		if(!timerStarted) {
+			startTime = Timer.getFPGATimestamp();
+			timerStarted = true;
+		}
+		else {
+			if(Timer.getFPGATimestamp() - startTime > extendTime) {
+				robot.liftTargetScale = true;
+				if(robot.lift.pot.get() > robot.lift.targetHeightScale - forgiveness && robot.lift.pot.get() < robot.lift.targetHeightScale + forgiveness) {
 					robot.grasping = false;
-					robot.intakeVel = -1;
-					timerStarted = false;
 					return true;
 				}
 			}
 		}
+		//}
 		return false;
 	}
 	
