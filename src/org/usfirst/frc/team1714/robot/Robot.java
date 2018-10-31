@@ -46,7 +46,9 @@ public class Robot extends IterativeRobot {
 		winchDown,
 		extended,
 		grasping,
-		robotCentric;
+		robotCentric,
+		compressorEnable;
+		
 	
 	//Robot Classes
 	Autonomous autonomous;
@@ -90,7 +92,7 @@ public class Robot extends IterativeRobot {
 		lift = new Lift();
 		//winch = new Winch();
 		compressor = new Compressor();
-		compressor.setClosedLoopControl(true);
+		compressor.setClosedLoopControl(false);		
 		
 		// init camera, set resolution and fps
 		camServer = CameraServer.getInstance();
@@ -164,6 +166,14 @@ public class Robot extends IterativeRobot {
 		driveTrain.update(driveVelX, driveVelY, driveVelRotation, resetGyro, robotCentric, gyroOffset);
 		intake.update(intakeVel, extended, grasping, lift);
 		lift.update(liftVel, liftTargetScale, liftTargetSwitch, liftTargetGround, extended);
+		if(compressorEnable)
+		{
+			compressor.setClosedLoopControl(true);
+		}
+		else
+		{
+			compressor.setClosedLoopControl(false);
+		}
 		//System.out.println("lift pot" + lift.pot.get());
 		//winch.update(winchUp, winchDown);
 		SmartDashboard.putNumber("Gyro Offset", gyroOffset);

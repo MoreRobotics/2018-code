@@ -104,5 +104,15 @@ public class DriverControl {
 		else {
 			robot.robotCentric = false;
 		}
+		
+		if(joystickRight.getRawButton(10))
+		{			
+			robot.compressorEnable = true;
+		}		
+		else
+		{
+			robot.compressorEnable = false;
+		}
+		
 	}
 }
